@@ -1,11 +1,19 @@
 Router.route('/url/:paperUrl', function () {
-    this.render('paper', {data: this.params});
-    var paperUrl = this.params.paperUrl
+  this.render('paper', {data: this.params});
+  var paperUrl = this.params.paperUrl
 });
 
 
 if (Meteor.isClient) {
+  Session.setDefault("pdfCreator", null)
+  var port = chrome.runtime.connect("bhjfbddokfglmbbbbbhdedminmankmnc")
+  port.onMessage.addListener(function (message) {
+    Session.set("pdfCreator", message.pdfCreator)
+  })
 
+  Template.paper.helpers({creator: function() {
+    return Session.get("pdfCreator")
+  }})
 }
 
 if (Meteor.isServer) {

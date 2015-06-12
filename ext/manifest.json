@@ -9,6 +9,17 @@
       ],
       "js": ["content.js"]
     }
+  ],
+  "background": {
+    "scripts": ["background.js"]
+  },
+  "externally_connectable":
+  {
+    "matches": [
+      "*://localhost/*"
+    ]
+  } ,
+  "web_accessible_resources": [
+    "pdfjs/*"
   ]
-
 }
