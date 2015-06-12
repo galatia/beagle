@@ -3,9 +3,10 @@
 </head>
 
 <body>
-  {{> loginButtons}}
+  <!--{{> loginButtons}}-->
 </body>
 
 <template name="paper">
-  <p>Your paper url is: {{paperUrl}}</p>
+  <iframe src="/viewer.html?file={{paperUrl}}"></iframe>
+  <div class="sidebar">Your paper url is: {{paperUrl}}</div>
 </template>
