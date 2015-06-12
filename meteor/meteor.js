@@ -8,6 +8,7 @@ if (Meteor.isClient) {
   Session.setDefault("pdfCreator", null)
   var port = chrome.runtime.connect("bhjfbddokfglmbbbbbhdedminmankmnc")
   port.onMessage.addListener(function (message) {
+    console.log(message);
     Session.set("pdfCreator", message.pdfCreator)
   })
 
