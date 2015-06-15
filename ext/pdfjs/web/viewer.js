@@ -20,10 +20,42 @@ var selectionHandler = function(event) {
     hoverbox.style.top  = y + "px"
     document.body.appendChild(hoverbox)
 
-    var selectedText = selection.toString()
+   // Get pages of selection, even if it crosses the boundary
+    var currentPage = PDFViewerApplication.pdfViewer.currentPageNumber - 1 // page the viewer is on
+    function getPageRect(page) { // get rect of that page, as helper for getPage(y)
+      return page.canvas.getClientRects()[0]
+    }
+    function getPage(y) {
+      function _getPage(y, n) {
+        var rect = getPageRect(PDFViewerApplication.pdfViewer.pages[n])
+        if(y > rect.bottom) {
+          return _getPage(y, n+1)
+        } else if (y < rect.top) {
+          return _getPage(y, n-1)
+        }
+        return PDFViewerApplication.pdfViewer.pages[n]
+      }
+      return _getPage(y, currentPage)
+    }
 
+    var rects = RangeFix.getClientRects(selection.getRangeAt(0))
+    var processedRects = []
+    for(var i = 0; i < rects.length; i++){
+      var rect = rects[i]
+      var page = getPage(rect.top)
+      var pageRect = getPageRect(page)
+      var min = page.viewport.convertToPdfPoint(rect.left - pageRect.left, rect.top - pageRect.top)
+      var max = page.viewport.convertToPdfPoint(rect.right - pageRect.left, rect.bottom - pageRect.top)
+      processedRects.push({page: page.id-1,
+                           xMin: min[0],
+                           yMin: min[1],
+                           xMax: max[0],
+                           yMax: max[1]})
+    }
+
+    var selectedText = selection.toString()
     var highlightButtonHandler = function(event) {
-      var msg = {selection: {text: selectedText}}
+      var msg = {selection: {text: selectedText, rects: processedRects}}
       port.postMessage(msg)
     }
     hoverbox.addEventListener('mouseup', highlightButtonHandler)
