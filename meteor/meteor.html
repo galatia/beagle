@@ -9,4 +9,13 @@
 <template name="paper">
   <p>Your paper url is: {{paperUrl}}</p>
   <p>Its creator is: {{creator}}</p>
+  {{#each selections}}
+    {{> selection}}
+  {{/each}}
+</template>
+
+<template name="selection">
+  <div class="selection">
+    <span>{{selection.text}}</span>
+  </div>
 </template>

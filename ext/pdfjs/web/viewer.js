@@ -10,23 +10,31 @@ var selectionHandler = function(event) {
     document.body.removeChild(hoverbox)
     hoverbox = false
   }
-  var s = window.getSelection()
-  if(!s.isCollapsed) { // not just clicked on empty selection
+  var selection = window.getSelection()
+  if(!selection.isCollapsed) { // not just clicked on empty selection
     var x = event.pageX
     var y = event.pageY + 15
     hoverbox = document.createElement('div')
     hoverbox.classList.add('hoverbox')
     hoverbox.style.left = x + "px"
     hoverbox.style.top  = y + "px"
-    document.body.appendChild(hoverbox);
+    document.body.appendChild(hoverbox)
+
+    var selectedText = selection.toString()
+
+    var highlightButtonHandler = function(event) {
+      var msg = {selection: {text: selectedText}}
+      port.postMessage(msg)
+    }
+    hoverbox.addEventListener('mouseup', highlightButtonHandler)
+    hoverbox.addEventListener('touchend', highlightButtonHandler)
   }
 }
 
 // Run selectionHandler whenever mouse/finger is lifted/unclicked
+
   document.addEventListener('mouseup', selectionHandler)
   document.addEventListener('touchend', selectionHandler)
-
-
 
 
 /* -*- Mode: Java; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
