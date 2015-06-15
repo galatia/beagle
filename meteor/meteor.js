@@ -6,7 +6,7 @@ Router.route('/url/:paperUrl', function () {
 
 if (Meteor.isClient) {
   Session.setDefault("pdfCreator", null)
-  var port = chrome.runtime.connect("bhjfbddokfglmbbbbbhdedminmankmnc")
+  var port = chrome.runtime.connect("odpjnchpigjffflggljcadppijpjjiho")
   port.onMessage.addListener(function (message) {
     console.log(message);
     Session.set("pdfCreator", message.pdfCreator)

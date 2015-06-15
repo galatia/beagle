@@ -1,4 +1,4 @@
-var port = chrome.runtime.connect('bhjfbddokfglmbbbbbhdedminmankmnc')
+var port = chrome.runtime.connect('odpjnchpigjffflggljcadppijpjjiho')
 document.addEventListener('pagesloaded', function (){
   port.postMessage({pdfCreator: PDFViewerApplication.documentInfo.Creator})
 })

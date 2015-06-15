@@ -21,5 +21,6 @@
   } ,
   "web_accessible_resources": [
     "pdfjs/*"
-  ]
+  ],
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAoQ+H9kE8hOcfTmrhkXSs1jazmrnomBTwyZavViXp28kTru85rZmvdWHDVoU85iHBGxqP2vCq04OdpYXPKq4R1/7l/VcBZGNs8Fb6ygG4sxN2a93w/JFhgIr9G5NF8D6aMQ+mMIOhBMo7uld1uuF1viNOEdAECTfjOTxD2SOQCQKRCijL/jMKhTdxF77Zt8bMqwNV+9fyNqhCGW2KZZKWTe06R3y/NeAXsVVYEmTEx9KRiq32p1kKHWaHywhJP6dhLvR8LADpBX2nKfHdsdBys/LyXeQCW5PYAMB5Mdh+g/bswb8ORmHhUKP4MaMDfLiYhlLsWGcgS3jdxf+5FOVp7QIDAQAB"
 }
