@@ -3,6 +3,32 @@ document.addEventListener('pagesloaded', function (){
   port.postMessage({pdfCreator: PDFViewerApplication.documentInfo.Creator})
 })
 
+// When text is selection, display hoverbox where the mouse is
+var hoverbox = false;
+var selectionHandler = function(event) {
+  if(hoverbox) {
+    document.body.removeChild(hoverbox)
+    hoverbox = false
+  }
+  var s = window.getSelection()
+  if(!s.isCollapsed) { // not just clicked on empty selection
+    var x = event.pageX
+    var y = event.pageY + 15
+    hoverbox = document.createElement('div')
+    hoverbox.classList.add('hoverbox')
+    hoverbox.style.left = x + "px"
+    hoverbox.style.top  = y + "px"
+    document.body.appendChild(hoverbox);
+  }
+}
+
+// Run selectionHandler whenever mouse/finger is lifted/unclicked
+  document.addEventListener('mouseup', selectionHandler)
+  document.addEventListener('touchend', selectionHandler)
+
+
+
+
 /* -*- Mode: Java; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* vim: set shiftwidth=2 tabstop=2 autoindent cindent expandtab: */
 /* Copyright 2012 Mozilla Foundation
