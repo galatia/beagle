@@ -2020,3 +2020,8 @@ html[dir='rtl'] #documentPropertiesOverlay .row > * {
   right: 0;
   width: 6px;
 }
+
+.highlight {
+  position: absolute;
+  background-color: rgba(255,255,60,.3);
+}

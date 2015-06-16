@@ -10,9 +10,13 @@ if (Meteor.isClient) {
   Session.setDefault("pdfCreator", null)
   var port = chrome.runtime.connect("odpjnchpigjffflggljcadppijpjjiho")
   port.onMessage.addListener(function (message) {
-    console.log(message);
     if(message.pdfCreator) {
       Session.set("pdfCreator", message.pdfCreator)
+    Tracker.autorun(function() {
+      Sxns.find({paperUrl: Session.get("paperUrl")}).forEach(function(sxn) {
+        port.postMessage({sxn_rects: sxn.selection.rects, id: sxn._id})
+      })
+    })
     } else if (message.selection) {
       Sxns.insert({paperUrl: Session.get("paperUrl"),
                    selection: message.selection})

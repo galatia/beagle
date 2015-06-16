@@ -1,6 +1,27 @@
 var port = chrome.runtime.connect('odpjnchpigjffflggljcadppijpjjiho')
 document.addEventListener('pagesloaded', function (){
   port.postMessage({pdfCreator: PDFViewerApplication.documentInfo.Creator})
+  sxns = {}
+  port.onMessage.addListener(function(msg) {
+    if(msg.sxn_rects) {
+      if(sxns[msg.id] == undefined) {
+        sxns[msg.id] = msg
+        for(var i=0; i < msg.sxn_rects.length; i++){
+          var rect = msg.sxn_rects[i]
+          var page = PDFViewerApplication.pdfViewer.pages[rect.page]
+          var min = page.viewport.convertToViewportPoint(rect.xMin, rect.yMin)
+          var max = page.viewport.convertToViewportPoint(rect.xMax, rect.yMax)
+          var elem = document.createElement('div')
+          elem.classList.add('highlight')
+          elem.style.left   = min[0] + "px"
+          elem.style.top    = min[1] + "px"
+          elem.style.width  = (max[0] - min[0]) + "px"
+          elem.style.height = (max[1] - min[1]) + "px"
+          page.canvas.parentElement.appendChild(elem)
+        }
+      }
+    }
+  })
 })
 
 // When text is selection, display hoverbox where the mouse is
@@ -26,16 +47,16 @@ var selectionHandler = function(event) {
       return page.canvas.getClientRects()[0]
     }
     function getPage(y) {
-      function _getPage(y, n) {
+      function _getPage(n) {
         var rect = getPageRect(PDFViewerApplication.pdfViewer.pages[n])
         if(y > rect.bottom) {
-          return _getPage(y, n+1)
+          return _getPage(n+1)
         } else if (y < rect.top) {
-          return _getPage(y, n-1)
+          return _getPage(n-1)
         }
         return PDFViewerApplication.pdfViewer.pages[n]
       }
-      return _getPage(y, currentPage)
+      return _getPage(currentPage)
     }
 
     var rects = RangeFix.getClientRects(selection.getRangeAt(0))
@@ -44,13 +65,15 @@ var selectionHandler = function(event) {
       var rect = rects[i]
       var page = getPage(rect.top)
       var pageRect = getPageRect(page)
-      var min = page.viewport.convertToPdfPoint(rect.left - pageRect.left, rect.top - pageRect.top)
-      var max = page.viewport.convertToPdfPoint(rect.right - pageRect.left, rect.bottom - pageRect.top)
-      processedRects.push({page: page.id-1,
-                           xMin: min[0],
-                           yMin: min[1],
-                           xMax: max[0],
-                           yMax: max[1]})
+      if(rect.height != pageRect.height || rect.width != pageRect.width) { // workaround for chrome bug, to check it's not the whole page
+        var min = page.viewport.convertToPdfPoint(rect.left - pageRect.left, rect.top - pageRect.top)
+        var max = page.viewport.convertToPdfPoint(rect.right - pageRect.left, rect.bottom - pageRect.top)
+        processedRects.push({page: page.id-1,
+                             xMin: min[0],
+                             yMin: min[1],
+                             xMax: max[0],
+                             yMax: max[1]})
+      }
     }
 
     var selectedText = selection.toString()
