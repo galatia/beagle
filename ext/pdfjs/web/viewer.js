@@ -1,27 +1,47 @@
-var port = chrome.runtime.connect('odpjnchpigjffflggljcadppijpjjiho')
+var port = chrome.runtime.connect('odpjnchpigjffflggljcadppijpjjiho') // connect the port to ext (by which it talks to meteor)
+
+// Once pdf loads, pass to port info about it
 document.addEventListener('pagesloaded', function (){
   port.postMessage({pdfCreator: PDFViewerApplication.documentInfo.Creator})
-  sxns = {}
-  port.onMessage.addListener(function(msg) {
-    if(msg.sxn_rects) {
-      if(sxns[msg.id] == undefined) {
-        sxns[msg.id] = msg
-        for(var i=0; i < msg.sxn_rects.length; i++){
-          var rect = msg.sxn_rects[i]
-          var page = PDFViewerApplication.pdfViewer.pages[rect.page]
-          var min = page.viewport.convertToViewportPoint(rect.xMin, rect.yMin)
-          var max = page.viewport.convertToViewportPoint(rect.xMax, rect.yMax)
-          var elem = document.createElement('div')
-          elem.classList.add('highlight')
-          elem.style.left   = min[0] + "px"
-          elem.style.top    = min[1] + "px"
-          elem.style.width  = (max[0] - min[0]) + "px"
-          elem.style.height = (max[1] - min[1]) + "px"
-          page.canvas.parentElement.appendChild(elem)
+})
+
+sxns = {}  // :: {sxn_id: {sxn_rects: [sxn_rect], elems: [elem], hover: bool}}
+port.onMessage.addListener(function(msg) { // when message received
+  // Handle messages that contain sxns
+  if(msg.sxn_rects) {
+    if(sxns[msg.id] == undefined) {
+      var sxn = sxns[msg.id] = msg
+      sxn.elems = []
+      var listenerGenerator = function(hover) {
+        return function(e) {
+          sxn.hover = hover
+          port.postMessage({hover: hover, id: sxn.id})
+          for(var i=0; i<sxn.elems.length; i++) { // add/rm class 'hover' to elems
+            sxn.elems[i].classList[hover?'add':'remove']('hover')
+          }
         }
       }
+      var mouseEnterListener = listenerGenerator(true)
+      var mouseLeaveListener = listenerGenerator(false)
+      // Go through every rect in the sxn
+      for(var i=0; i < msg.sxn_rects.length; i++){
+        var rect = msg.sxn_rects[i]
+        var page = PDFViewerApplication.pdfViewer.pages[rect.page]
+        var min  = page.viewport.convertToViewportPoint(rect.xMin, rect.yMin)
+        var max  = page.viewport.convertToViewportPoint(rect.xMax, rect.yMax)
+        var elem = document.createElement('div')
+        elem.classList.add('highlight')
+        elem.style.left   =           min[0]  + "px"
+        elem.style.top    =           min[1]  + "px"
+        elem.style.width  = (max[0] - min[0]) + "px"
+        elem.style.height = (max[1] - min[1]) + "px"
+        sxn.elems.push(elem)
+        elem.addEventListener('mouseenter', mouseEnterListener)
+        elem.addEventListener('mouseleave', mouseLeaveListener)
+        page.canvas.parentElement.parentElement.appendChild(elem)
+      }
     }
-  })
+  }
 })
 
 // When text is selection, display hoverbox where the mouse is

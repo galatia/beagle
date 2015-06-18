@@ -20,8 +20,17 @@ if (Meteor.isClient) {
     } else if (message.selection) {
       Sxns.insert({paperUrl: Session.get("paperUrl"),
                    selection: message.selection})
+    } else if (message.hover !== undefined) {
+      if (message.hover) {
+        Session.set("hovered", message.id) // sxn_id is the one thing set to hovered
+      } else {
+        Session.set("hovered", false)
+      }
     }
   })
+
+
+  // TEMPLATE HELPERS //
 
   Template.paper.helpers({
     creator: function() {
@@ -29,6 +38,12 @@ if (Meteor.isClient) {
     },
     selections: function() {
       return Sxns.find({paperUrl: Session.get("paperUrl")})
+    }
+  })
+
+  Template.selection.helpers({
+    hovered: function() {
+      return Session.equals("hovered", this._id) // return true if hovered==sxn_id
     }
   })
 }

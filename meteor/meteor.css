@@ -1,1 +1,8 @@
-/* CSS declarations go here */
+.selection {
+  border: 1px solid transparent;
+  padding: 5px;
+}
+
+.hovered {
+  border: 1px solid #777;
+}

@@ -2025,3 +2025,7 @@ html[dir='rtl'] #documentPropertiesOverlay .row > * {
   position: absolute;
   background-color: rgba(255,255,60,.3);
 }
+
+.highlight.hover {
+  background-color: rgba(255,255,60,.6);
+}
