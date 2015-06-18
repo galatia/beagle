@@ -5,6 +5,16 @@ document.addEventListener('pagesloaded', function (){
   port.postMessage({pdfCreator: PDFViewerApplication.documentInfo.Creator})
 })
 
+// Helpers
+var updateSxnHover = function(hover, sxn) {
+  sxn.hover = hover
+  port.postMessage({hover: hover, id: sxn.id})
+  for(var i=0; i<sxn.elems.length; i++) { // add/rm class 'hover' to elems
+    sxn.elems[i].classList[hover?'add':'remove']('hover')
+  }
+}
+
+// Handle incoming messages
 sxns = {}  // :: {sxn_id: {sxn_rects: [sxn_rect], elems: [elem], hover: bool}}
 port.onMessage.addListener(function(msg) { // when message received
   // Handle messages that contain sxns
@@ -12,17 +22,13 @@ port.onMessage.addListener(function(msg) { // when message received
     if(sxns[msg.id] == undefined) {
       var sxn = sxns[msg.id] = msg
       sxn.elems = []
-      var listenerGenerator = function(hover) {
-        return function(e) {
-          sxn.hover = hover
-          port.postMessage({hover: hover, id: sxn.id})
-          for(var i=0; i<sxn.elems.length; i++) { // add/rm class 'hover' to elems
-            sxn.elems[i].classList[hover?'add':'remove']('hover')
-          }
+      var listenerGenerator = function(hover, sxn) {
+        return function (e) {
+          return updateSxnHover(hover, sxn)
         }
       }
-      var mouseEnterListener = listenerGenerator(true)
-      var mouseLeaveListener = listenerGenerator(false)
+      var mouseEnterListener = listenerGenerator(true, sxn)
+      var mouseLeaveListener = listenerGenerator(false, sxn)
       // Go through every rect in the sxn
       for(var i=0; i < msg.sxn_rects.length; i++){
         var rect = msg.sxn_rects[i]
@@ -41,6 +47,11 @@ port.onMessage.addListener(function(msg) { // when message received
         page.canvas.parentElement.parentElement.appendChild(elem)
       }
     }
+  }
+  // Handle hovered highlight on meteor side
+  else if (msg.hover != undefined) {
+    console.log(msg)
+    updateSxnHover(msg.hover, sxns[msg.sxn_id])
   }
 })
 

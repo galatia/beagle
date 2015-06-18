@@ -46,6 +46,17 @@ if (Meteor.isClient) {
       return Session.equals("hovered", this._id) // return true if hovered==sxn_id
     }
   })
+
+  Template.selection.events({
+    'mouseenter .selection': function() {
+      Session.set("hovered", this._id)
+      port.postMessage({hover: true, sxn_id: this._id})
+    },
+    'mouseleave .selection': function() {
+      Session.set("hovered", false)
+      port.postMessage({hover: false, sxn_id: this._id})
+    }
+  })
 }
 
 if (Meteor.isServer) {
