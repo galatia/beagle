@@ -17,45 +17,89 @@ var updateSxnClass = function(className, bool, sxn) {
   }
 }
 
+sxns = {} // :: {sxn_id: {sxn_rects: [sxn_rect], elems: [elem], hover: bool, top: {page, y}}}
+sxnsByPage = {} // :: {page: {sxn_id: sxn}}
+function renderSxn(sxn) {
+  sxn.elems = []
+  var listenerGenerator = function(className, bool, sxn) {
+    return function (e) {
+      return updateSxnClass(className, bool, sxn)
+    }
+  }
+  var mouseEnterListener = listenerGenerator('hover', true, sxn)
+  var mouseLeaveListener = listenerGenerator('hover', false, sxn)
+  var mouseClickListener = listenerGenerator('clicked', true, sxn)
+  sxn.top = {}
+  // Go through every rect in the sxn
+  for(var i=0; i < sxn.sxn_rects.length; i++){
+    var rect = sxn.sxn_rects[i]
+    var page = rect.page
+    if(sxnsByPage[page]===undefined) {sxnsByPage[page]={}}
+    sxnsByPage[page][sxn.id]=sxn;
+    var pageObj = PDFViewerApplication.pdfViewer.pages[page]
+    var min  = pageObj.viewport.convertToViewportPoint(rect.xMin, rect.yMin)
+    var max  = pageObj.viewport.convertToViewportPoint(rect.xMax, rect.yMax)
+    var elem = document.createElement('div')
+    elem.classList.add('highlight')
+    elem.style.left   =           min[0]  + "px"
+    elem.style.top    =           min[1]  + "px"
+    elem.style.width  = (max[0] - min[0]) + "px"
+    elem.style.height = (max[1] - min[1]) + "px"
+    sxn.elems.push(elem)
+    elem.addEventListener('mouseenter', mouseEnterListener)
+    elem.addEventListener('mouseleave', mouseLeaveListener)
+    elem.addEventListener('click', mouseClickListener)
+    pageObj.canvas.parentElement.parentElement.appendChild(elem)
+    if(sxn.top.page===undefined || page <= sxn.top.page) {
+      if(page < sxn.top.page || sxn.top.y===undefined || rect.yMax > sxn.top.y) {
+        sxn.top.y = rect.yMax
+        sxn.top.elem = elem
+      }
+      sxn.top.page = page
+    }
+  }
+}
+
+document.addEventListener('pagerendered', function(e) {
+  var page = e.detail.pageNumber - 1;
+  if(sxnsByPage[page]) {
+    for(var id in sxnsByPage[page]) {
+      if(sxnsByPage[page].hasOwnProperty(id)) {
+        renderSxn(sxns[id])
+      }
+    }
+  }
+})
+
+function getPageRect(page) { // get rect of that page, as helper for getPage(y)
+  return page.canvas.getClientRects()[0]
+}
+function getPage(n) {
+  return PDFViewerApplication.pdfViewer.pages[n]
+}
+
+function scrollToSxn(id) {
+  var viewerContainer = document.getElementById('viewerContainer')
+  var viewerContainerTop = viewerContainer.getClientRects()[0].top
+  viewerContainer.scrollTop += (sxns[id].top.elem.getClientRects()[0].top - viewerContainerTop)
+}
+
 // Handle incoming messages
-sxns = {}  // :: {sxn_id: {sxn_rects: [sxn_rect], elems: [elem], hover: bool}}
 port.onMessage.addListener(function(msg) { // when message received
   // Handle messages that contain sxns
   if(msg.sxn_rects) {
     if(sxns[msg.id] == undefined) {
-      var sxn = sxns[msg.id] = msg
-      sxn.elems = []
-      var listenerGenerator = function(className, bool, sxn) {
-        return function (e) {
-          return updateSxnClass(className, bool, sxn)
-        }
-      }
-      var mouseEnterListener = listenerGenerator('hover', true, sxn)
-      var mouseLeaveListener = listenerGenerator('hover', false, sxn)
-      var mouseClickListener = listenerGenerator('clicked', true, sxn)
-      // Go through every rect in the sxn
-      for(var i=0; i < msg.sxn_rects.length; i++){
-        var rect = msg.sxn_rects[i]
-        var page = PDFViewerApplication.pdfViewer.pages[rect.page]
-        var min  = page.viewport.convertToViewportPoint(rect.xMin, rect.yMin)
-        var max  = page.viewport.convertToViewportPoint(rect.xMax, rect.yMax)
-        var elem = document.createElement('div')
-        elem.classList.add('highlight')
-        elem.style.left   =           min[0]  + "px"
-        elem.style.top    =           min[1]  + "px"
-        elem.style.width  = (max[0] - min[0]) + "px"
-        elem.style.height = (max[1] - min[1]) + "px"
-        sxn.elems.push(elem)
-        elem.addEventListener('mouseenter', mouseEnterListener)
-        elem.addEventListener('mouseleave', mouseLeaveListener)
-        elem.addEventListener('click', mouseClickListener)
-        page.canvas.parentElement.parentElement.appendChild(elem)
-      }
+      renderSxn(sxns[msg.id] = msg)
     }
   }
   // Handle hovered highlight on meteor side
   else if (msg.hover !== undefined) {
     updateSxnClass('hover', msg.hover, sxns[msg.sxn_id])
+  }
+  // Handle clicked highlight on meteor side
+  else if (msg.clicked !== undefined) {
+    updateSxnClass('clicked', msg.clicked, sxns[msg.sxn_id])
+    scrollToSxn(msg.sxn_id)
   }
 })
 
@@ -78,27 +122,24 @@ var selectionHandler = function(event) {
 
    // Get pages of selection, even if it crosses the boundary
     var currentPage = PDFViewerApplication.pdfViewer.currentPageNumber - 1 // page the viewer is on
-    function getPageRect(page) { // get rect of that page, as helper for getPage(y)
-      return page.canvas.getClientRects()[0]
-    }
-    function getPage(y) {
-      function _getPage(n) {
-        var rect = getPageRect(PDFViewerApplication.pdfViewer.pages[n])
+    function findPage(y) {
+      function _findPage(n) {
+        var rect = getPageRect(getPage(n))
         if(y > rect.bottom) {
-          return _getPage(n+1)
+          return _findPage(n+1)
         } else if (y < rect.top) {
-          return _getPage(n-1)
+          return _findPage(n-1)
         }
-        return PDFViewerApplication.pdfViewer.pages[n]
+        return getPage(n)
       }
-      return _getPage(currentPage)
+      return _findPage(currentPage)
     }
 
     var rects = RangeFix.getClientRects(selection.getRangeAt(0))
     var processedRects = []
     for(var i = 0; i < rects.length; i++){
       var rect = rects[i]
-      var page = getPage(rect.top)
+      var page = findPage(rect.top)
       var pageRect = getPageRect(page)
       if(rect.height != pageRect.height || rect.width != pageRect.width) { // workaround for chrome bug, to check it's not the whole page
         var min = page.viewport.convertToPdfPoint(rect.left - pageRect.left, rect.top - pageRect.top)

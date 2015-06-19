@@ -9,14 +9,22 @@ Router.route('/url/:paperUrl', function () {
 if (Meteor.isClient) {
   Session.setDefault("pdfCreator", null)
   var port = chrome.runtime.connect("odpjnchpigjffflggljcadppijpjjiho")
+  Meteor.startup(function() {
+    Tracker.autorun(function() {
+      console.log('in autorun')
+      if(Session.get("clicked")) {
+        document.body.scrollTop += document.getElementById(Session.get("clicked")).getBoundingClientRect().top
+      }
+    })
+  })
   port.onMessage.addListener(function (message) {
     if(message.pdfCreator) {
       Session.set("pdfCreator", message.pdfCreator)
-    Tracker.autorun(function() {
-      Sxns.find({paperUrl: Session.get("paperUrl")}).forEach(function(sxn) {
-        port.postMessage({sxn_rects: sxn.selection.rects, id: sxn._id})
+      Tracker.autorun(function() {
+        Sxns.find({paperUrl: Session.get("paperUrl")}).forEach(function(sxn) {
+          port.postMessage({sxn_rects: sxn.selection.rects, id: sxn._id})
+        })
       })
-    })
     } else if (message.selection) {
       Sxns.insert({paperUrl: Session.get("paperUrl"),
                    selection: message.selection})
@@ -48,12 +56,7 @@ if (Meteor.isClient) {
       return Session.equals("hovered", this._id) // return true if hovered==sxn_id
     },
     clicked: function() {
-      if(Session.equals("clicked", this._id)) {
-        document.body.scrollTop += Template.instance().find('div').getBoundingClientRect().top
-        return true
-      } else {
-      return false
-      }
+      return Session.equals("clicked", this._id)
     }
   })
 
@@ -65,6 +68,10 @@ if (Meteor.isClient) {
     'mouseleave .selection': function() {
       Session.set("hovered", false)
       port.postMessage({hover: false, sxn_id: this._id})
+    },
+    'click .selection': function() {
+      Session.set("clicked", this._id)
+      port.postMessage({clicked: true, sxn_id: this._id})
     }
   })
 }
