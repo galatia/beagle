@@ -6,16 +6,16 @@
   {{> loginButtons}}
 </body>
 
-<template name="paper">
+<template name="sidebar">
   <p>Your paper url is: {{paperUrl}}</p>
   <p>Its creator is: {{creator}}</p>
-  {{#each selections}}
-    {{> selection}}
+  {{#each highlights}}
+    {{> highlight}}
   {{/each}}
 </template>
 
-<template name="selection">
-  <div class="selection {{#if hovered}}hovered{{/if}} {{#if clicked}}clicked{{/if}}" id="{{_id}}">
-    <span>{{selection.text}}</span>
+<template name="highlight">
+  <div class="highlight {{#if hovered}}hovered{{/if}} {{#if clicked}}clicked{{/if}}" id="{{_id}}">
+    <span>{{highlight.text}}</span>
   </div>
 </template>
