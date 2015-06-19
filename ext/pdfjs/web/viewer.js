@@ -6,11 +6,14 @@ document.addEventListener('pagesloaded', function (){
 })
 
 // Helpers
-var updateSxnHover = function(hover, sxn) {
-  sxn.hover = hover
-  port.postMessage({hover: hover, id: sxn.id})
+var updateSxnClass = function(className, bool, sxn) {
+  sxn[className] = bool
+  msg = {}
+  msg[className] = bool
+  msg['id'] = sxn.id
+  port.postMessage(msg)
   for(var i=0; i<sxn.elems.length; i++) { // add/rm class 'hover' to elems
-    sxn.elems[i].classList[hover?'add':'remove']('hover')
+    sxn.elems[i].classList[bool?'add':'remove'](className)
   }
 }
 
@@ -22,13 +25,14 @@ port.onMessage.addListener(function(msg) { // when message received
     if(sxns[msg.id] == undefined) {
       var sxn = sxns[msg.id] = msg
       sxn.elems = []
-      var listenerGenerator = function(hover, sxn) {
+      var listenerGenerator = function(className, bool, sxn) {
         return function (e) {
-          return updateSxnHover(hover, sxn)
+          return updateSxnClass(className, bool, sxn)
         }
       }
-      var mouseEnterListener = listenerGenerator(true, sxn)
-      var mouseLeaveListener = listenerGenerator(false, sxn)
+      var mouseEnterListener = listenerGenerator('hover', true, sxn)
+      var mouseLeaveListener = listenerGenerator('hover', false, sxn)
+      var mouseClickListener = listenerGenerator('clicked', true, sxn)
       // Go through every rect in the sxn
       for(var i=0; i < msg.sxn_rects.length; i++){
         var rect = msg.sxn_rects[i]
@@ -44,14 +48,14 @@ port.onMessage.addListener(function(msg) { // when message received
         sxn.elems.push(elem)
         elem.addEventListener('mouseenter', mouseEnterListener)
         elem.addEventListener('mouseleave', mouseLeaveListener)
+        elem.addEventListener('click', mouseClickListener)
         page.canvas.parentElement.parentElement.appendChild(elem)
       }
     }
   }
   // Handle hovered highlight on meteor side
-  else if (msg.hover != undefined) {
-    console.log(msg)
-    updateSxnHover(msg.hover, sxns[msg.sxn_id])
+  else if (msg.hover !== undefined) {
+    updateSxnClass('hover', msg.hover, sxns[msg.sxn_id])
   }
 })
 

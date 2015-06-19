@@ -6,3 +6,8 @@
 .hovered {
   border: 1px solid #777;
 }
+
+.clicked {
+  border: 1px solid blue;
+  box-shadow: 0px 0px 4px #777;
+}

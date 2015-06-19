@@ -26,6 +26,8 @@ if (Meteor.isClient) {
       } else {
         Session.set("hovered", false)
       }
+    } else if (message.clicked !== undefined) {
+      Session.set("clicked", message.id)
     }
   })
 
@@ -44,6 +46,14 @@ if (Meteor.isClient) {
   Template.selection.helpers({
     hovered: function() {
       return Session.equals("hovered", this._id) // return true if hovered==sxn_id
+    },
+    clicked: function() {
+      if(Session.equals("clicked", this._id)) {
+        document.body.scrollTop += Template.instance().find('div').getBoundingClientRect().top
+        return true
+      } else {
+      return false
+      }
     }
   })
 
