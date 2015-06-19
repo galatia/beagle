@@ -138,6 +138,7 @@ var selectionHandler = function(event) {
     var rects = RangeFix.getClientRects(selection.getRangeAt(0))
     var processedRects = []
     for(var i = 0; i < rects.length; i++){
+      if (i>0 && rects[i].top==rects[i-1].top && rects[i].bottom==rects[i-1].bottom && (rects[i].left==rects[i-1].left || rects[i].right == rects[i-1].right)) continue;
       var rect = rects[i]
       var page = findPage(rect.top)
       var pageRect = getPageRect(page)
