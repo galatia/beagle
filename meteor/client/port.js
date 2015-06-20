@@ -4,20 +4,29 @@ port.onMessage.addListener(function (message) {
   if(message.pdfCreator) {
     Session.set("pdfCreator", message.pdfCreator)
     Tracker.autorun(function() {
-      Hls.find({paperUrl: Session.get("paperUrl")}).forEach(function(hl) {
-        port.postMessage({hl_rects: hl.highlight.rects, id: hl._id})
+      Hls.find({paperUrl: Session.get("paperUrl")}).observeChanges({
+        added: function(id, fields) {
+                 fields._id=id
+                 port.postMessage({hl_added: fields})
+               },
+        changed: function(id, fields) {
+                   port.postMessage({hl_changed: {id: id, fields: fields}})
+                 },
+        removed: function(id) {
+                   port.postMessage({hl_removed: {id: id}})
+                 }
       })
     })
   } else if (message.highlight) {
-    Hls.insert({paperUrl: Session.get("paperUrl"),
-                 highlight: message.highlight})
+    message.highlight.paperUrl = Session.get("paperUrl")
+    Hls.insert(message.highlight)
   } else if (message.hover !== undefined) {
     if (message.hover) {
-      Session.set("hovered", message.id) // hl_id is the one thing set to hovered
+      Session.set("hovered", message._id) // hl_id is the one thing set to hovered
     } else {
       Session.set("hovered", false)
     }
   } else if (message.clicked !== undefined) {
-    Session.set("clicked", message.id)
+    Session.set("clicked", message._id)
   }
 })

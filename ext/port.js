@@ -7,10 +7,22 @@ port.onMessage.addListener(function(msg) {
   /* Highlight related msgs */
 
   // Handle messages that contain hls
-  if(msg.hl_rects) {
-    if(hls[msg.id] == undefined) {
-      renderHl(hls[msg.id] = msg)
+  if(msg.hl_added) {
+    var hl = msg.hl_added
+    if(hls[hl._id] == undefined) {
+      renderHl(hls[hl._id] = hl)
     }
+  }
+  else if (msg.hl_changed) {
+    var id = msg.hl_changed.id
+    for(var key in msg.hl_changed.fields) {
+      hls[id][key] = msg.hl_changed.fields[key]
+    }
+  }
+  else if (msg.hl_removed) {
+    var id = msg.hl_removed.id
+    removeHl(hls[id])
+    hls[id] = undefined
   }
   // Handle hovered highlight on meteor side
   else if (msg.hover !== undefined) {

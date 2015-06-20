@@ -4,7 +4,7 @@ document.addEventListener('pagesloaded', function (){
 })
 
 // Map from hl_id to hl object
-hls = {} // :: {hl_id: {hl_rects: [hl_rect], elems: [elem], hover: bool, clicked: bool, top: {page::num, y::num}}}  ; only hl_rects stored in mongo, rest is computed
+hls = {} // :: {hl_id: {rects: [rect], elems: [elem], hover: bool, clicked: bool, top: {page::num, y::num}}}  ; only rects stored in mongo, rest is computed
 // Map from page num to hls touching that page
 hlsByPage = {} // :: {page: {hl_id: hl}}
 
@@ -13,7 +13,7 @@ function updateHlClass(className, bool, hl) {
   hl[className] = bool
   msg = {}
   msg[className] = bool
-  msg['id'] = hl.id
+  msg['_id'] = hl._id
   port.postMessage(msg)
   for(var i=0; i<hl.elems.length; i++) { // add/rm class 'hover' to elems
     hl.elems[i].classList[bool?'add':'remove'](className)
@@ -36,12 +36,12 @@ function renderHl(hl) {
 
   // Go through each rect in the hl to generate each elem, and compute top
   hl.top = {}
-  for(var i=0; i < hl.hl_rects.length; i++){
-    var rect = hl.hl_rects[i]
+  for(var i=0; i < hl.rects.length; i++){
+    var rect = hl.rects[i]
     var page = rect.page
     // update hlsByPage object
     if(hlsByPage[page]===undefined) {hlsByPage[page]={}}
-    hlsByPage[page][hl.id]=hl;
+    hlsByPage[page][hl._id]=hl;
 
     // coordinate transform (pdf->viewport)
     var pageObj = PDFViewerApplication.pdfViewer.pages[page]
@@ -71,6 +71,12 @@ function renderHl(hl) {
       }
       hl.top.page = page
     }
+  }
+}
+
+function removeHl(hl) {
+  for(var i in hl.elems) {
+    hl.elems[i].remove()
   }
 }
 
