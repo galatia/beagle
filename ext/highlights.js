@@ -110,61 +110,63 @@ var highlightHandler = function(event) {
     document.body.removeChild(hoverbox)
     hoverbox = false
   }
-  var selection = window.getSelection()
-  if(!selection.isCollapsed) { // TODO not just clicked on empty selection
-    var x = event.pageX
-    var y = event.pageY + 15
-    hoverbox = document.createElement('div')
-    hoverbox.classList.add('hoverbox')
-    hoverbox.style.left = x + "px"
-    hoverbox.style.top  = y + "px"
-    document.body.appendChild(hoverbox)
+  setTimeout(function() {
+    var selection = window.getSelection()
+    if(!selection.isCollapsed) { // TODO not just clicked on empty selection
+      var x = event.pageX
+      var y = event.pageY + 15
+      hoverbox = document.createElement('div')
+      hoverbox.classList.add('hoverbox')
+      hoverbox.style.left = x + "px"
+      hoverbox.style.top  = y + "px"
+      document.body.appendChild(hoverbox)
 
-   // Get pages of selection, even if it crosses the boundary
-    var currentPage = PDFViewerApplication.pdfViewer.currentPageNumber - 1 // page the viewer is on
-    function findPage(y) {
-      function _findPage(n) {
-        var rect = getPageRect(getPage(n))
-        if(y > rect.bottom) {
-          return _findPage(n+1)
-        } else if (y < rect.top) {
-          return _findPage(n-1)
+     // Get pages of selection, even if it crosses the boundary
+      var currentPage = PDFViewerApplication.pdfViewer.currentPageNumber - 1 // page the viewer is on
+      function findPage(y) {
+        function _findPage(n) {
+          var rect = getPageRect(getPage(n))
+          if(y > rect.bottom) {
+            return _findPage(n+1)
+          } else if (y < rect.top) {
+            return _findPage(n-1)
+          }
+          return getPage(n)
         }
-        return getPage(n)
+        return _findPage(currentPage)
       }
-      return _findPage(currentPage)
-    }
 
-    // Create & process rects
-    var uRects = RangeFix.getClientRects(selection.getRangeAt(0))
-    var rects = []
-    for(var i = 0; i < uRects.length; i++){
-      // remove duplicate
-      if (i>0 && uRects[i].top==uRects[i-1].top && uRects[i].bottom==uRects[i-1].bottom && (uRects[i].left==uRects[i-1].left || uRects[i].right == uRects[i-1].right)) continue;
-      var uRect = uRects[i]
-      var page = findPage(uRect.top)
-      var pageRect = getPageRect(page)
-      if(uRect.height != pageRect.height || uRect.width != pageRect.width) { // workaround for chrome bug, to check it's not the whole page
-        // convert coordinates
-        var min = page.viewport.convertToPdfPoint(uRect.left - pageRect.left, uRect.top - pageRect.top)
-        var max = page.viewport.convertToPdfPoint(uRect.right - pageRect.left, uRect.bottom - pageRect.top)
-        rects.push({page: page.id-1,
-                    xMin: min[0],
-                    yMin: min[1],
-                    xMax: max[0],
-                    yMax: max[1]})
+      // Create & process rects
+      var uRects = RangeFix.getClientRects(selection.getRangeAt(0))
+      var rects = []
+      for(var i = 0; i < uRects.length; i++){
+        // remove duplicate
+        if (i>0 && uRects[i].top==uRects[i-1].top && uRects[i].bottom==uRects[i-1].bottom && (uRects[i].left==uRects[i-1].left || uRects[i].right == uRects[i-1].right)) continue;
+        var uRect = uRects[i]
+        var page = findPage(uRect.top)
+        var pageRect = getPageRect(page)
+        if(uRect.height != pageRect.height || uRect.width != pageRect.width) { // workaround for chrome bug, to check it's not the whole page
+          // convert coordinates
+          var min = page.viewport.convertToPdfPoint(uRect.left - pageRect.left, uRect.top - pageRect.top)
+          var max = page.viewport.convertToPdfPoint(uRect.right - pageRect.left, uRect.bottom - pageRect.top)
+          rects.push({page: page.id-1,
+                      xMin: min[0],
+                      yMin: min[1],
+                      xMax: max[0],
+                      yMax: max[1]})
+        }
       }
-    }
 
-    // Pass selected text and rects to meteor on event (clicked)
-    var selectedText = selection.toString()
-    var highlightButtonHandler = function(event) {
-      var msg = {highlight: {text: selectedText, rects: rects}}
-      port.postMessage(msg)
+      // Pass selected text and rects to meteor on event (clicked)
+      var selectedText = selection.toString()
+      var highlightButtonHandler = function(event) {
+        var msg = {highlight: {text: selectedText, rects: rects}}
+        port.postMessage(msg)
+      }
+      hoverbox.addEventListener('mouseup', highlightButtonHandler)
+      hoverbox.addEventListener('touchend', highlightButtonHandler)
     }
-    hoverbox.addEventListener('mouseup', highlightButtonHandler)
-    hoverbox.addEventListener('touchend', highlightButtonHandler)
-  }
+  })
 }
 
 // Run highlightHandler whenever mouse/finger is lifted/unclicked
