@@ -59,7 +59,9 @@ function renderHl(hl) {
     elem.addEventListener('mouseenter', mouseEnterListener)
     elem.addEventListener('mouseleave', mouseLeaveListener)
     elem.addEventListener('click', mouseClickListener)
-    pageObj.canvas.parentElement.parentElement.appendChild(elem)
+    if(pageObj.canvas) {
+      pageObj.canvas.parentElement.parentElement.appendChild(elem)
+    }
 
     // track hl.top.elem to know where to scroll
     if(hl.top.page===undefined || page <= hl.top.page) {
@@ -93,9 +95,12 @@ function getPage(n) {
 
 // Scroll viewer so hl is at top
 function scrollToHl(hl_id) {
-  var viewerContainer = document.getElementById('viewerContainer')
-  var viewerContainerTop = viewerContainer.getClientRects()[0].top
-  viewerContainer.scrollTop += (hls[hl_id].top.elem.getClientRects()[0].top - viewerContainerTop)
+  PDFViewerApplication.pdfViewer.currentPageNumber = hls[hl_id].top.page + 1
+  setTimeout(function() {
+    var viewerContainer = document.getElementById('viewerContainer')
+    var viewerContainerTop = viewerContainer.getClientRects()[0].top
+    viewerContainer.scrollTop += (hls[hl_id].top.elem.getClientRects()[0].top - viewerContainerTop)
+  }, 100)
 }
 
 // When text is selected, display hoverbox where the mouse is
