@@ -28,6 +28,10 @@ port.onMessage.addListener(function (message) {
       Session.set("hovered", false)
     }
   } else if (message.clicked !== undefined) {
-    Session.set("clicked", message._id)
+    if(message.clicked) {
+      Session.set("clicked", message._id)
+    } else {
+      Session.set("clicked", false)
+    }
   }
 })

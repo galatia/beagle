@@ -1,6 +1,7 @@
 // Once pdf loads, pass to port info about it
 document.addEventListener('pagesloaded', function (){
   port.postMessage({pdfCreator: PDFViewerApplication.documentInfo.Creator})
+  document.getElementById('viewerContainer').addEventListener('click', clearClicked, true)
 })
 
 // Map from hl_id to hl object
@@ -17,6 +18,13 @@ function updateHlClass(className, bool, hl) {
   port.postMessage(msg)
   for(var i=0; i<hl.elems.length; i++) { // add/rm class 'hover' to elems
     hl.elems[i].classList[bool?'add':'remove'](className)
+  }
+}
+
+function clearClicked() {
+  var clicked = document.getElementsByClassName('clicked highlight')
+  if(clicked.length) {
+    updateHlClass('clicked', false, hls[clicked[0].getAttribute('data-hl_id')])
   }
 }
 
@@ -56,6 +64,7 @@ function renderHl(hl) {
     elem.style.top    =           min[1]  + "px"
     elem.style.width  = (max[0] - min[0]) + "px"
     elem.style.height = (max[1] - min[1]) + "px"
+    elem.setAttribute('data-hl_id', hl._id)
     hl.elems.push(elem)
     elem.addEventListener('mouseenter', mouseEnterListener)
     elem.addEventListener('mouseleave', mouseLeaveListener)
