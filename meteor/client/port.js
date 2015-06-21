@@ -19,6 +19,7 @@ port.onMessage.addListener(function (message) {
     })
   } else if (message.highlight) {
     message.highlight.paperUrl = Session.get("paperUrl")
+    message.highlight.compose = true
     Hls.insert(message.highlight)
   } else if (message.hover !== undefined) {
     if (message.hover) {

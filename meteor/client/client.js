@@ -31,6 +31,11 @@ Meteor.startup(function() {
       Session.set("clicked", this._id)
       port.postMessage({clicked: true, hl_id: this._id})
       return false
+    },
+    'click .save': function() {
+      var comment = Template.instance().find('textarea.comment').value
+      console.log(comment)
+      Hls.update(this._id, {$set: {compose: false, comment: comment}})
     }
   })
 

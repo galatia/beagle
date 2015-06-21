@@ -19,6 +19,12 @@
 
 <template name="highlight">
   <div class="highlight {{#if hovered}}hovered{{/if}} {{#if clicked}}clicked{{/if}}" id="{{_id}}">
-    <span>{{text}}</span>
+    <span>{{text}}</span><br/>
+    {{#if compose}}
+      <textarea class="comment">{{comment}}</textarea>
+      <button class="save">Save</button>
+    {{else}}
+      <span class="comment">{{comment}}</span>
+    {{/if}}
   </div>
 </template>
