@@ -1,6 +1,12 @@
 Meteor.startup(function() {
   Session.setDefault("pdfCreator", null)
 
+  Template.sidebar.events({
+    'click .screenshot-taker': function() {
+      port.postMessage({mode: 'screenshot'})
+    }
+  })
+
   Template.highlight.events({
     'mouseenter .highlight': function() {
       Session.set("hovered", this._id)

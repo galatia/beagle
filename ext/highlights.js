@@ -98,49 +98,58 @@ function getPageRect(page) { // get rect of that page, as helper for getPage(y)
 function getPage(n) {
   return PDFViewerApplication.pdfViewer.pages[n]
 }
+// Get pages of selection, even if it crosses the boundary
+function findPage(y) {
+  var _findPage = function(n) {
+    var rect = getPageRect(getPage(n))
+    if(y > rect.bottom) {
+      return _findPage(n+1)
+    } else if (y < rect.top) {
+      return _findPage(n-1)
+    }
+    return getPage(n)
+  }
+  var currentPage = PDFViewerApplication.pdfViewer.currentPageNumber - 1 // page the viewer is on
+  return _findPage(currentPage)
+}
 
 // Scroll viewer so hl is at top
 function scrollToHl(hl_id) {
-  PDFViewerApplication.pdfViewer.currentPageNumber = hls[hl_id].top.page + 1
+  var pageTarget = hls[hl_id].top.page + 1
+  if(!(hls[hl_id].top.elem.getClientRects()[0])) {
+    PDFViewerApplication.pdfViewer.currentPageNumber = pageTarget;
+  }
   setTimeout(function() {
     var viewerContainer = document.getElementById('viewerContainer')
     var viewerContainerTop = viewerContainer.getClientRects()[0].top
     viewerContainer.scrollTop += (hls[hl_id].top.elem.getClientRects()[0].top - viewerContainerTop)
-  }, 100)
+  }, 150)
 }
 
 // When text is selected, display hoverbox where the mouse is
-var hoverbox = false;
-var highlightHandler = function(event) {
+hoverbox = false;
+function removeCurrentHoverbox() {
   if(hoverbox) {
     document.body.removeChild(hoverbox)
     hoverbox = false
   }
+}
+function makeHoverbox(x,y) {
+  removeCurrentHoverbox()
+  hoverbox = document.createElement('div')
+  hoverbox.classList.add('hoverbox')
+  hoverbox.style.left = x + "px"
+  hoverbox.style.top  = y + "px"
+  document.body.appendChild(hoverbox)
+}
+function highlightHandler(event) {
+  removeCurrentHoverbox()
   setTimeout(function() {
     var selection = window.getSelection()
     if(!selection.isCollapsed) { // TODO not just clicked on empty selection
       var x = event.pageX
       var y = event.pageY + 15
-      hoverbox = document.createElement('div')
-      hoverbox.classList.add('hoverbox')
-      hoverbox.style.left = x + "px"
-      hoverbox.style.top  = y + "px"
-      document.body.appendChild(hoverbox)
-
-     // Get pages of selection, even if it crosses the boundary
-      var currentPage = PDFViewerApplication.pdfViewer.currentPageNumber - 1 // page the viewer is on
-      function findPage(y) {
-        function _findPage(n) {
-          var rect = getPageRect(getPage(n))
-          if(y > rect.bottom) {
-            return _findPage(n+1)
-          } else if (y < rect.top) {
-            return _findPage(n-1)
-          }
-          return getPage(n)
-        }
-        return _findPage(currentPage)
-      }
+      makeHoverbox(x,y)
 
       // Create & process rects
       var uRects = RangeFix.getClientRects(selection.getRangeAt(0))

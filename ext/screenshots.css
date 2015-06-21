@@ -1,0 +1,16 @@
+#viewerContainer.screenshot-mode * {
+  cursor: crosshair
+}
+#viewerContainer.screenshot-mode.inactive * {
+  cursor: default
+}
+#viewerContainer.screenshot-mode .highlight {
+  display: none
+}
+#viewerContainer.screenshot-mode .textLayer {
+  display: none
+}
+div.active-screenshot {
+  position: absolute;
+  background-color: rgba(156,230,255,.5);
+}

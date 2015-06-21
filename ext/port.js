@@ -3,6 +3,7 @@ port = chrome.runtime.connect('odpjnchpigjffflggljcadppijpjjiho')
 
 // Handle incoming messages
 port.onMessage.addListener(function(msg) {
+  console.log("viewer got", msg)
 
   /* Highlight related msgs */
 
@@ -34,5 +35,9 @@ port.onMessage.addListener(function(msg) {
     scrollToHl(msg.hl_id)
   }
 
+  /* Screenshot related msgs */
 
+  else if (msg.mode == 'screenshot') {
+    enterScreenshotMode()
+  }
 })
