@@ -1,9 +1,19 @@
 Meteor.startup(function() {
   Session.setDefault("pdfCreator", null)
 
+  var unclickCurrent = function() {
+    if(Session.get('clicked')) {
+      port.postMessage({clicked: false, hl_id: Session.get("clicked")})
+    }
+  }
+
   Template.sidebar.events({
     'click .screenshot-taker': function() {
       port.postMessage({mode: 'screenshot'})
+    },
+    'click .sidebar': function() {
+      unclickCurrent()
+      Session.set("clicked", false)
     }
   })
 
@@ -17,8 +27,10 @@ Meteor.startup(function() {
       port.postMessage({hover: false, hl_id: this._id})
     },
     'click .highlight': function() {
+      unclickCurrent()
       Session.set("clicked", this._id)
       port.postMessage({clicked: true, hl_id: this._id})
+      return false
     }
   })
 

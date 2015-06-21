@@ -31,8 +31,10 @@ port.onMessage.addListener(function(msg) {
   }
   // Handle clicked highlight on meteor side
   else if (msg.clicked !== undefined) {
+    if(msg.clicked) {
+      scrollToHl(msg.hl_id)
+    }
     updateHlClass('clicked', msg.clicked, hls[msg.hl_id])
-    scrollToHl(msg.hl_id)
   }
 
   /* Screenshot related msgs */

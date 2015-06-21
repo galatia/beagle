@@ -7,12 +7,14 @@
 </body>
 
 <template name="sidebar">
-  <p>Your paper url is: {{paperUrl}}</p>
-  <p>Its creator is: {{creator}}</p>
-  <p><a class="screenshot-taker">Take a screenshot</a></p>
-  {{#each highlights}}
-    {{> highlight}}
-  {{/each}}
+  <div class="sidebar">
+    <p>Your paper url is: {{paperUrl}}</p>
+    <p>Its creator is: {{creator}}</p>
+    <p><button class="screenshot-taker">Take a screenshot</button></p>
+    {{#each highlights}}
+      {{> highlight}}
+    {{/each}}
+  </div>
 </template>
 
 <template name="highlight">

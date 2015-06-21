@@ -51,6 +51,7 @@ function renderHl(hl) {
     // add highlight boxes on top of text
     var elem = document.createElement('div')
     elem.classList.add('highlight')
+    if(hl.clicked) { elem.classList.add('clicked') }
     elem.style.left   =           min[0]  + "px"
     elem.style.top    =           min[1]  + "px"
     elem.style.width  = (max[0] - min[0]) + "px"
