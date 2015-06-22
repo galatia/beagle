@@ -4,7 +4,7 @@ port.onMessage.addListener(function (message) {
   if(message.pdfCreator) {
     Session.set("pdfCreator", message.pdfCreator)
     Tracker.autorun(function() {
-      Hls.find({paperUrl: Session.get("paperUrl")}).observeChanges({
+      Hls.find({sourceUrl: Session.get("sourceUrl")}).observeChanges({
         added: function(id, fields) {
                  fields._id=id
                  port.postMessage({hl_added: fields})
@@ -18,9 +18,9 @@ port.onMessage.addListener(function (message) {
       })
     })
   } else if (message.highlight) {
-    message.highlight.paperUrl = Session.get("paperUrl")
-    message.highlight.compose = true
-    Hls.insert(message.highlight)
+    var hl = message.highlight
+    hl.sourceUrl  = Session.get("sourceUrl")
+    Session.set("composeHl", hl)
   } else if (message.hover !== undefined) {
     if (message.hover) {
       Session.set("hovered", message._id) // hl_id is the one thing set to hovered

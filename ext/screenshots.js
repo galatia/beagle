@@ -53,8 +53,7 @@ var screenshotMouseUp = function(e) {
   var pdfMax = screenshot.page.viewport.convertToPdfPoint(screenshot.xMax, screenshot.yMax)
   makeHoverbox(e.pageX, e.pageY + 15)
   var highlightButtonHandler = function(event) {
-    console.log(screenshot)
-    port.postMessage({highlight: {rects: [{page: screenshot.page.id-1, xMin: pdfMin[0], xMax: pdfMax[0], yMin: pdfMin[1], yMax: pdfMax[1]}], text: "[Screenshot on page "+screenshot.page.id+"]"}})
+    port.postMessage({highlight: {rects: [{page: screenshot.page.id-1, xMin: pdfMin[0], xMax: pdfMax[0], yMin: pdfMin[1], yMax: pdfMax[1]}], sourceText: "[Screenshot on page "+screenshot.page.id+"]"}})
   }
   container.classList.add('inactive')
   container.removeEventListener('mouseup', screenshotMouseUp, true)

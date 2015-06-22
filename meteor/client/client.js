@@ -14,6 +14,34 @@ Meteor.startup(function() {
     'click .sidebar': function() {
       unclickCurrent()
       Session.set("clicked", false)
+    },
+    'input [contenteditable]': function(e) {
+      var hl = Session.get('composeHl')
+      hl.annotation = e.target.innerHTML
+      Session.set('composeHl', hl)
+    },
+    'focus [contenteditable]': function(e) {
+      if(e.target.innerHTML == annotationPlaceholder) {
+        e.target.innerHTML = ""
+      }
+    },
+    'blur [contenteditable]': function(e) {
+      if(e.target.innerHTML == "") {
+        e.target.innerHTML = annotationPlaceholder
+      }
+    },
+    'click .save': function() {
+      var hl = Session.get('composeHl')
+      var annote = {content: hl.annotation, inReplyTo: {
+        sourceUrl:  hl.sourceUrl,
+        rects:      hl.rects,
+        sourceText: hl.sourceText
+      }}
+      Meteor.call("addAnnotation", annote, function(err, res) {
+        if(res && res.hl && res.annote) {
+          Session.set('composeHl', null)
+        }
+      })
     }
   })
 
@@ -31,11 +59,6 @@ Meteor.startup(function() {
       Session.set("clicked", this._id)
       port.postMessage({clicked: true, hl_id: this._id})
       return false
-    },
-    'click .save': function() {
-      var comment = Template.instance().find('textarea.comment').value
-      console.log(comment)
-      Hls.update(this._id, {$set: {compose: false, comment: comment}})
     }
   })
 

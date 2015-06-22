@@ -11,3 +11,9 @@
   border: 1px solid blue;
   box-shadow: 0px 0px 4px #777;
 }
+
+.annotation-placeholder::before {
+  content: "Write your annotation here";
+  color: #666;
+  font-style: italic
+}

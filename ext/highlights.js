@@ -185,7 +185,7 @@ function highlightHandler(event) {
       // Pass selected text and rects to meteor on event (clicked)
       var selectedText = selection.toString()
       var highlightButtonHandler = function(event) {
-        var msg = {highlight: {text: selectedText, rects: rects}}
+        var msg = {highlight: {rects: rects, sourceText: selectedText}}
         port.postMessage(msg)
       }
       hoverbox.addEventListener('mouseup', highlightButtonHandler)

@@ -1,5 +1,5 @@
 <head>
-  <title>meteor</title>
+  <title>BEAGLE</title>
 </head>
 
 <body>
@@ -8,9 +8,14 @@
 
 <template name="sidebar">
   <div class="sidebar">
-    <p>Your paper url is: {{paperUrl}}</p>
-    <p>Its creator is: {{creator}}</p>
+    <p>The source URL is: {{sourceUrl}}</p>
+    <!-- <p>Its creator is: {{creator}}</p> -->
     <p><button class="screenshot-taker">Take a screenshot</button></p>
+    {{#with composeHl}}
+      {{> highlight}}
+      <div contenteditable class="annotation">{{{annotationPlaceholder}}}</div>
+      <button class="save">Save</button>
+    {{/with}}
     {{#each highlights}}
       {{> highlight}}
     {{/each}}
@@ -19,12 +24,11 @@
 
 <template name="highlight">
   <div class="highlight {{#if hovered}}hovered{{/if}} {{#if clicked}}clicked{{/if}}" id="{{_id}}">
-    <span>{{text}}</span><br/>
-    {{#if compose}}
-      <textarea class="comment">{{comment}}</textarea>
-      <button class="save">Save</button>
-    {{else}}
-      <span class="comment">{{comment}}</span>
-    {{/if}}
+    <div class="sourceText">{{sourceText}}</div>
+    {{#each annotations}}
+      <div class="annotation">
+        <div class="content">{{content}}</div>
+      </div>
+    {{/each}}
   </div>
 </template>
