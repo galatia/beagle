@@ -28,14 +28,14 @@ port.onMessage.addListener(function(msg) {
   }
   // Handle hovered highlight on meteor side
   else if (msg.hover !== undefined) {
-    updateHlClass('hover', msg.hover, hls[msg.hl_id])
+    updateHlClass('hover', msg.hover, hls[msg.hl_id], false)
   }
   // Handle clicked highlight on meteor side
   else if (msg.clicked !== undefined) {
     if(msg.clicked) {
       scrollToHl(msg.hl_id)
     }
-    updateHlClass('clicked', msg.clicked, hls[msg.hl_id])
+    updateHlClass('clicked', msg.clicked, hls[msg.hl_id], false)
   }
 
   /* Screenshot related msgs */

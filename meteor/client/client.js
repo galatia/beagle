@@ -1,18 +1,11 @@
 Meteor.startup(function() {
   Session.setDefault("pdfCreator", null)
 
-  var unclickCurrent = function() {
-    if(Session.get('clicked')) {
-      port.postMessage({clicked: false, hl_id: Session.get("clicked")})
-    }
-  }
-
   Template.sidebar.events({
     'click .screenshot-taker': function() {
       port.postMessage({mode: 'screenshot'})
     },
     'click .sidebar': function() {
-      unclickCurrent()
       Session.set("clicked", false)
     }
   })
@@ -20,23 +13,47 @@ Meteor.startup(function() {
   Template.highlight.events({
     'mouseenter .highlight': function() {
       Session.set("hovered", this._id)
-      port.postMessage({hover: true, hl_id: this._id})
     },
     'mouseleave .highlight': function() {
       Session.set("hovered", false)
-      port.postMessage({hover: false, hl_id: this._id})
     },
-    'click .highlight': function() {
-      unclickCurrent()
+    'click .highlight': function(e) {
       Session.set("clicked", this._id)
-      port.postMessage({clicked: true, hl_id: this._id})
-      return false
+      e.stopPropagation()
     }
   })
 
+  Template.composeBox.onRendered(function() {
+    this.find('#composeField').focus()
+  })
+
   function scrollTo(id) {
-    var elem = document.getElementById(id)
-    document.body.scrollTop += elem.getBoundingClientRect().top
+    var elem   = document.getElementById(id)
+    if(!elem) return false;
+    var rect   = elem.getBoundingClientRect()
+    var top    = rect.top
+    var bottom = rect.bottom
+    var viewportHeight = document.documentElement.clientHeight
+
+    var delta = (top/2 + bottom/2) - viewportHeight/2
+
+    var begin = document.body.scrollTop
+    var t0 = null;
+    var thalf = Math.max(110, Math.min(50, delta/10));
+    var step = function(ts) {
+      if(!t0) t0 = ts;
+      var t = (ts - t0) / thalf;
+      if (t < 2) {
+        if (t < 1) {
+          document.body.scrollTop = begin - delta/2 * (Math.sqrt(1 - t*t) - 1);
+        } else {
+          t -= 2;
+          document.body.scrollTop = begin + delta/2 * (Math.sqrt(1 - t*t) + 1);
+        }
+        window.requestAnimationFrame(step);
+      }
+    }
+    window.requestAnimationFrame(step);
   }
 
   // When highlight is clicked, scrolls to it in sidebar

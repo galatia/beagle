@@ -10,12 +10,14 @@ hls = {} // :: {hl_id: {rects: [rect], elems: [elem], hover: bool, clicked: bool
 hlsByPage = {} // :: {page: {hl_id: hl}}
 
 // Add or rm class from all rect elem in hl
-function updateHlClass(className, bool, hl) {
+function updateHlClass(className, bool, hl, sendMsg) {
   hl[className] = bool
-  msg = {}
-  msg[className] = bool
-  msg['_id'] = hl._id
-  port.postMessage(msg)
+  if(sendMsg) {
+    msg = {}
+    msg[className] = bool
+    msg['_id'] = hl._id
+    port.postMessage(msg)
+  }
   for(var i=0; i<hl.elems.length; i++) { // add/rm class 'hover' to elems
     hl.elems[i].classList[bool?'add':'remove'](className)
   }
@@ -24,7 +26,7 @@ function updateHlClass(className, bool, hl) {
 function clearClicked() {
   var clicked = document.getElementsByClassName('clicked highlight')
   if(clicked.length) {
-    updateHlClass('clicked', false, hls[clicked[0].getAttribute('data-hl_id')])
+    updateHlClass('clicked', false, hls[clicked[0].getAttribute('data-hl_id')], true)
   }
 }
 
@@ -39,7 +41,7 @@ function renderHl(hl) {
   // wrap udateHlClass in closure for listener
   var listenerGenerator = function(className, bool, hl) {
     return function (e) {
-      return updateHlClass(className, bool, hl)
+      return updateHlClass(className, bool, hl, true)
     }
   }
   // create listeners for each event type
@@ -48,7 +50,8 @@ function renderHl(hl) {
   var mouseClickListener = listenerGenerator('clicked', true, hl)
 
   // Go through each rect in the hl to generate each elem, and compute top
-  hl.top = {}
+  hl.top    = {}
+  hl.bottom = {}
   for(var i=0; i < hl.rects.length; i++){
     var rect = hl.rects[i]
     var page = rect.page
@@ -86,6 +89,13 @@ function renderHl(hl) {
       }
       hl.top.page = page
     }
+    if(hl.bottom.page===undefined || page >= hl.bottom.page) {
+      if(page > hl.bottom.page || hl.bottom.y===undefined || rect.yMin < hl.bottom.y) {
+        hl.bottom.y = rect.yMin
+        hl.bottom.elem = elem
+      }
+      hl.bottom.page = page
+    }
   }
 }
 
@@ -104,6 +114,7 @@ document.addEventListener('pagerendered', function(e) {
         renderHl(hls[id])
       }
     }
+    if(scrollToScrolledHl) { scrollToScrolledHl() }
   }
 })
 
@@ -134,11 +145,42 @@ function scrollToHl(hl_id) {
   if(!(hls[hl_id].top.elem.getClientRects()[0])) {
     PDFViewerApplication.pdfViewer.currentPageNumber = pageTarget;
   }
-  setTimeout(function() {
+  window.scrollToScrolledHl = function() {
     var viewerContainer = document.getElementById('viewerContainer')
-    var viewerContainerTop = viewerContainer.getClientRects()[0].top
-    viewerContainer.scrollTop += (hls[hl_id].top.elem.getClientRects()[0].top - viewerContainerTop)
-  }, 150)
+    var vCrect = viewerContainer.getClientRects()[0]
+    var vCtop = vCrect.top
+    var vCbot = vCrect.bottom
+    try {
+      var top    = hls[hl_id].top.elem.getClientRects()[0].top
+      var bottom = hls[hl_id].bottom.elem.getClientRects()[0].bottom
+    } catch (e) {
+      console.warn(e)
+      return
+    }
+    window.scrollToScrolledHl = undefined
+    console.log(top, bottom, vCtop, vCbot)
+
+    var delta  = top/2 + bottom/2 - vCbot/2 - vCtop/2
+
+    var begin = viewerContainer.scrollTop
+    var t0 = null;
+    var thalf = Math.max(110, Math.min(50, delta/10));
+    var step = function(ts) {
+      if(!t0) t0 = ts;
+      var t = (ts - t0) / thalf;
+      if (t < 2) {
+        if (t < 1) {
+          viewerContainer.scrollTop = begin - delta/2 * (Math.sqrt(1 - t*t) - 1);
+        } else {
+          t -= 2;
+          viewerContainer.scrollTop = begin + delta/2 * (Math.sqrt(1 - t*t) + 1);
+        }
+        window.requestAnimationFrame(step);
+      }
+    }
+    window.requestAnimationFrame(step);
+  }
+  scrollToScrolledHl()
 }
 
 // When text is selected, display hoverbox where the mouse is
