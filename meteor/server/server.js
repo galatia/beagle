@@ -43,7 +43,14 @@ Meteor.startup(function() {
         {
           find: function(hl) {
             return Annotes.find({inReplyTo: hl._id})
-          }
+          },
+          children: [
+            {
+              find: function(annote) {
+                return Meteor.users.find(annote.author, {fields: {profile: 1, "services.google.picture": 1}})
+              }
+            }
+          ]
         }
       ]
     };

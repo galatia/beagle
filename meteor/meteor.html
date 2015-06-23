@@ -24,6 +24,11 @@
   <div class="highlight {{#if hovered}}hovered{{/if}} {{#if clicked}}clicked{{/if}}" id="{{_id}}">
     <div class="sourceText">{{sourceText}}</div>
     {{#each annotations}}
+      <div class="authorBlock">
+        <img src="{{author.picture}}"/>
+        <span class="author">{{author.name}}</span>
+        <time datetime={{toISOString createdAt}} title={{localISO createdAt}}>{{calendar createdAt}}</time>
+      </div>
       <div class="annotation">
         <div class="content">{{{content}}}</div>
       </div>
