@@ -9,10 +9,13 @@ Meteor.startup(function() {
       return Session.get("pdfCreator")
     },
     composeHl: function() {
-      return Session.get("composeHl")
-    },
-    annotationPlaceholder: function() {
-      return annotationPlaceholder
+      var composeHl = Session.get("composeHl")
+      if(composeHl) {
+        composeHl.compose = annotationPlaceholder
+        return composeHl
+      } else {
+        return null
+      }
     },
     highlights: function() {
       return Hls.find()

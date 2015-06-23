@@ -30,6 +30,11 @@ function clearClicked() {
 
 // Render hl: generate elems from rects
 function renderHl(hl) {
+  if(hl.elems) {
+    for(var i=0; i<hl.elems.length; i++) {
+      hl.elems[i].remove()
+    }
+  }
   hl.elems = []
   // wrap udateHlClass in closure for listener
   var listenerGenerator = function(className, bool, hl) {

@@ -14,34 +14,6 @@ Meteor.startup(function() {
     'click .sidebar': function() {
       unclickCurrent()
       Session.set("clicked", false)
-    },
-    'input [contenteditable]': function(e) {
-      var hl = Session.get('composeHl')
-      hl.annotation = e.target.innerHTML
-      Session.set('composeHl', hl)
-    },
-    'focus [contenteditable]': function(e) {
-      if(e.target.innerHTML == annotationPlaceholder) {
-        e.target.innerHTML = ""
-      }
-    },
-    'blur [contenteditable]': function(e) {
-      if(e.target.innerHTML == "") {
-        e.target.innerHTML = annotationPlaceholder
-      }
-    },
-    'click .save': function() {
-      var hl = Session.get('composeHl')
-      var annote = {content: hl.annotation, inReplyTo: {
-        sourceUrl:  hl.sourceUrl,
-        rects:      hl.rects,
-        sourceText: hl.sourceText
-      }}
-      Meteor.call("addAnnotation", annote, function(err, res) {
-        if(res && res.hl && res.annote) {
-          Session.set('composeHl', null)
-        }
-      })
     }
   })
 
@@ -62,11 +34,16 @@ Meteor.startup(function() {
     }
   })
 
+  function scrollTo(id) {
+    var elem = document.getElementById(id)
+    document.body.scrollTop += elem.getBoundingClientRect().top
+  }
+
   // When highlight is clicked, scrolls to it in sidebar
   Tracker.autorun(function() {
     if(Session.get("clicked")) {
-      var elem = document.getElementById(Session.get("clicked"))
-      document.body.scrollTop += elem.getBoundingClientRect().top
+      Hls.findOne(Session.get("clicked"))
+      scrollTo(Session.get("clicked"))
     }
   })
 })

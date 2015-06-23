@@ -13,8 +13,6 @@
     <p><button class="screenshot-taker">Take a screenshot</button></p>
     {{#with composeHl}}
       {{> highlight}}
-      <div contenteditable class="annotation">{{{annotationPlaceholder}}}</div>
-      <button class="save">Save</button>
     {{/with}}
     {{#each highlights}}
       {{> highlight}}
@@ -27,8 +25,24 @@
     <div class="sourceText">{{sourceText}}</div>
     {{#each annotations}}
       <div class="annotation">
-        <div class="content">{{content}}</div>
+        <div class="content">{{{content}}}</div>
       </div>
     {{/each}}
+    {{#if compose}}
+      {{> composeBox}}
+    {{/if}}
+  </div>
+</template>
+
+<template name="composeBox">
+  <div class="composeBox">
+    <div class="toolbar">
+      <button data-command="bold"><b>B</b></button>
+      <button data-command="italic"><i>I</i></button>
+      <button data-command="insertUnorderedList">•</button>
+      <button data-command="insertOrderedList">1.</button>
+    </div>
+    <div contenteditable class="annotation">{{{compose}}}</div>
+    <button class="save">Save</button>
   </div>
 </template>

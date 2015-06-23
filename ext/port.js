@@ -3,7 +3,7 @@ port = chrome.runtime.connect('odpjnchpigjffflggljcadppijpjjiho')
 
 // Handle incoming messages
 port.onMessage.addListener(function(msg) {
-  console.log("viewer got", msg)
+  console.log('viewer got ', msg)
 
   /* Highlight related msgs */
 
@@ -19,6 +19,7 @@ port.onMessage.addListener(function(msg) {
     for(var key in msg.hl_changed.fields) {
       hls[id][key] = msg.hl_changed.fields[key]
     }
+    renderHl(hls[id])
   }
   else if (msg.hl_removed) {
     var id = msg.hl_removed.id
