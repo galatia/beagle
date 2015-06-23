@@ -48,6 +48,7 @@ var initPort = function() {
       } else {
         port.postMessage({hl_added: composeHl})
       }
+      port.postMessage({hl_id: composeHl._id, clicked: true})
     } else {
       if(oldComposeHl) {
         port.postMessage({hl_removed: {id: oldComposeHl._id}})

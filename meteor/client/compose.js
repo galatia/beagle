@@ -32,6 +32,11 @@ Meteor.startup(function() {
           Session.set('clicked', res.hl)
         }
       })
+    },
+    'click .discard': function() {
+      Session.set('composeHl', null)
+      if(Session.equals('clicked', 'composeHl')) {Session.set('clicked', false)}
+      if(Session.equals('hover'  , 'composeHl')) {Session.set('hover'  , false)}
     }
   })
 })
