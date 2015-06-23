@@ -12,3 +12,4 @@ iron:router
 
 grigio:babel
 reywood:publish-composite
+djedi:sanitize-html

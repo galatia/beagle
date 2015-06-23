@@ -17,3 +17,12 @@
   color: #666;
   font-style: italic
 }
+
+*[contenteditable] {display: inline-block;}
+.composeFieldContainer, #composeField {
+  width: 100%;
+}
+.composeFieldContainer {
+  padding-bottom: 5px;
+  padding-top: 5px;
+}

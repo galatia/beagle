@@ -25,6 +25,7 @@ Meteor.startup(function() {
 
   Template.composeBox.onRendered(function() {
     this.find('#composeField').focus()
+    document.execCommand('styleWithCSS',false,false)
   })
 
   function scrollTo(id) {

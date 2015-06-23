@@ -17,6 +17,16 @@ Meteor.startup(function() {
         hl_id = Hls.insert(hl)
         annotation.inReplyTo = hl_id
       }
+      annotation.content   = sanitizeHtml(annotation.content, {
+        allowedTags: ['b','i','u','strike','ul','ol','li','blockquote','a','table','thead','caption','tbody','tr','th','td','pre','br'],
+        allowedAttributes: {
+          'a': ['href']
+        },
+        transformTags: {
+          'div': 'br',
+          'p': 'br'
+        }
+      })
       annotation.author    = this.userId
       annotation.createdAt = now
       console.log(annotation)

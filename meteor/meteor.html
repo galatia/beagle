@@ -39,10 +39,17 @@
     <div class="toolbar">
       <button data-command="bold"><b>B</b></button>
       <button data-command="italic"><i>I</i></button>
+      <button data-command="underline"><u>U</u></button>
+      <button data-command="strikeThrough"><strike>S</strike></button>
       <button data-command="insertUnorderedList">•</button>
       <button data-command="insertOrderedList">1.</button>
+      <button data-command="indent">&gt;</button>
+      <button data-command="outdent">&lt;</button>
+      <button data-command="removeFormat"><i>T</i><sub><small>X</small></sub></button>
     </div>
-    <div contenteditable id="composeField">{{{compose}}}</div>
+    <div class="composeFieldContainer">
+      <div contenteditable id="composeField">{{{compose}}}</div>
+    </div>
     <button class="save">Save</button>
     <button class="discard">Discard</button>
   </div>

@@ -17,7 +17,14 @@ Meteor.startup(function() {
       }
     },
     'click .toolbar button': function(e) {
-      document.execCommand(e.target.getAttribute('data-command'))
+      var cF = document.getElementById("composeField")
+      cF.focus()
+      var cmd = e.currentTarget.getAttribute('data-command')
+      console.log("cmd", cmd)
+      document.execCommand(cmd)
+      if(cmd=="removeFormat") {
+        cF.innerHTML = cF.innerText.replace(/\n/g,"<br/>")
+      }
     },
     'click .save': function() {
       var hl = Session.get('composeHl')
