@@ -869,7 +869,7 @@ var ViewHistory = (function ViewHistoryClosure() {
       return new Promise(function (resolve) {
 
 
-        resolve(localStorage.getItem('database'));
+        resolve(null);
       });
     },
 
@@ -6172,7 +6172,6 @@ var PDFViewerApplication = {
         self.pdfViewer.focus();
       }
     }, function rejected(reason) {
-      console.error(reason);
 
       firstPagePromise.then(function () {
         self.setInitialView(null, scale);
