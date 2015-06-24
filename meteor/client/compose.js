@@ -23,8 +23,27 @@ Meteor.startup(function() {
       console.log("cmd", cmd)
       document.execCommand(cmd)
       if(cmd=="removeFormat") {
-        cF.innerHTML = cF.innerText.replace(/\n/g,"<br/>")
+        var range = window.getSelection().getRangeAt(0)
+        var textContent = range.toString()
+        console.log(textContent)
+        var textNode = document.createTextNode(textContent)
+        console.log(range)
+        while ( range.startOffset    === 0                         &&
+                range.endOffset      === range.endContainer.length &&
+                range.startContainer === range.endContainer        &&
+                range.endContainer.previousSibling === null        &&
+                range.endContainer.nextSibling     === null        &&
+               !range.endContainer.parentNode.getAttribute("contenteditable") ){
+          range.selectNode(range.startContainer.parentNode)
+          console.log(range)
+        }
+
+        range.deleteContents()
+        range.insertNode(textNode)
       }
+    },
+    'click .toolbar button.createLink': function(e) {
+      document.execCommand("createLink",false,prompt("Link address:",""))
     },
     'click .save': function() {
       var hl = Session.get('composeHl')
