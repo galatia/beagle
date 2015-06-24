@@ -26,6 +26,12 @@ Meteor.startup(function() {
     },
     highlights: function() {
       return Hls.find({},{sort: {createdAt: -1}})
+    },
+    linkPreview: function() {
+      return Session.get("linkPreview")
+    },
+    linkEdit: function() {
+      return Session.get("linkEdit")
     }
   })
 

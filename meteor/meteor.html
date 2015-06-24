@@ -18,6 +18,12 @@
       {{> highlight}}
     {{/each}}
   </div>
+  {{#with linkPreview}}
+    {{> linkPreviewer}}
+  {{/with}}
+  {{#with linkEdit}}
+    {{> linkEditor}}
+  {{/with}}
 </template>
 
 <template name="highlight">
@@ -50,7 +56,7 @@
       <button data-command="insertOrderedList">1.</button>
       <button data-command="indent">&gt;</button>
       <button data-command="outdent">&lt;</button>
-      <button data-command="removeFormat"><i>T</i><sub><small>X</small></sub></button>
+      <button class="removeFormat"><i>T</i><sub><small>X</small></sub></button>
       <button class="createLink"><a href="#">K</a></button>
     </div>
     <div class="composeFieldContainer">
@@ -58,5 +64,36 @@
     </div>
     <button class="save">Save</button>
     <button class="discard">Discard</button>
+  </div>
+</template>
+
+<template name="linkPreviewer">
+  <div class="linkPreviewContainer" style="top: {{y}}px">
+    <div id="linkPreviewer">
+      <a class="change" href="#">Change</a>
+      <a class="remove" href="#">Remove</a>
+      <span class="gotoLink"><span class="goto">Go to:</span> <a target="_blank" href="{{href}}">{{href}}</a></span>
+    </div>
+  </div>
+</template>
+
+<template name="linkEditor">
+  <div class="linkEditContainer" style="top: {{y}}px">
+    <div id="linkEditor">
+      <form>
+        <div>
+          <label for="displayText">Text:</label>
+          <input name="displayText" type="text" value="{{text}}" required tabindex=1>
+        </div>
+        <div>
+          <label for="href">Link to:</label>
+          <input name="href" type="text" value="{{href}}" required pattern="(mailto:)?^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,253}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,253}[a-zA-Z0-9])?)*|(https?://)?[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,253}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,253}[a-zA-Z0-9])?)+(\/.*)?" tabindex=2>
+        </div>
+      </form>
+      <div>
+        <button class="discard" formnovalidate tabindex=4>Discard</button>
+        <button class="done" tabindex=3>Done</button>
+      </div>
+    </div>
   </div>
 </template>
