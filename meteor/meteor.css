@@ -8,13 +8,17 @@
   display: inline-block;
 }
 
-.hovered {
-  border: 1px solid #777;
-}
-
 .clicked {
   border: 1px solid blue;
   box-shadow: 0px 0px 4px #777;
+}
+
+.clicked .sourceText {
+  background-color: rgba(255,130,0,.3);
+}
+
+.hovered {
+  border: 1px solid #777;
 }
 
 .annotation-placeholder::before {
