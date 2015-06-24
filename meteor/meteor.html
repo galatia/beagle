@@ -27,7 +27,7 @@
       <div class="authorBlock">
         <img src="{{author.picture}}"/>
         <span class="author">{{author.name}}</span>
-        <time datetime={{toISOString createdAt}} title={{localISO createdAt}}>{{calendar createdAt}}</time>
+        <time datetime={{toISOString createdAt}} title={{localISO createdAt}}>{{fromNow createdAt}}</time>
       </div>
       <div class="annotation">
         <div class="content">{{{content}}}</div>
