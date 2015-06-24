@@ -39,23 +39,6 @@ var initPort = function() {
   }
   hlClassAutorun('clicked')
   hlClassAutorun('hover')
-  var oldComposeHl = undefined
-  Tracker.autorun(function() {
-    var composeHl = Session.get("composeHl")
-    if(composeHl) {
-      if(oldComposeHl) {
-        port.postMessage({hl_changed: {id: composeHl._id, fields: composeHl}})
-      } else {
-        port.postMessage({hl_added: composeHl})
-      }
-      port.postMessage({hl_id: composeHl._id, clicked: true})
-    } else {
-      if(oldComposeHl) {
-        port.postMessage({hl_removed: {id: oldComposeHl._id}})
-      }
-    }
-    oldComposeHl = composeHl
-  })
 }
 
 port.onMessage.addListener(function (message) {
@@ -65,11 +48,9 @@ port.onMessage.addListener(function (message) {
   } else if (message.highlight) {
     var hl = message.highlight
     hl.sourceUrl  = Session.get("sourceUrl")
-    hl._id = "composeHl"
-    Session.set("composeHl", hl)
-    Session.set("clicked", "composeHl")
-    var composeField = document.getElementById("composeField")
-    if(composeField) { composeField.focus() }
+    Meteor.call("addDraftHl", hl, function(err, hl_id) {
+      Meteor.call("addDraftAnnotation", hl_id)
+    })
   } else if (message.hover !== undefined) {
     if (message.hover) {
       Session.set("hovered", message._id) // hl_id is the one thing set to hovered

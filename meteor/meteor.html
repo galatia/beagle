@@ -11,9 +11,6 @@
     <p>The source URL is: {{sourceUrl}}</p>
     <!-- <p>Its creator is: {{creator}}</p> -->
     <p><button class="screenshot-taker">Take a screenshot</button></p>
-    {{#with composeHl}}
-      {{> highlight}}
-    {{/with}}
     {{#each highlights}}
       {{> highlight}}
     {{/each}}
@@ -30,18 +27,40 @@
   <div class="highlight {{#if hovered}}hovered{{/if}} {{#if clicked}}clicked{{/if}}" id="{{_id}}">
     <div class="sourceText">{{sourceText}}</div>
     {{#each annotations}}
-      <div class="authorBlock">
-        <img src="{{author.picture}}"/>
-        <span class="author">{{author.name}}</span>
-        <time datetime={{toISOString createdAt}} title={{localISO createdAt}}>{{fromNow createdAt}}</time>
-      </div>
-      <div class="annotation">
-        <div class="content">{{{content}}}</div>
-      </div>
+      {{> annotation}}
     {{/each}}
+  </div>
+</template>
+
+<template name="annotation">
+  <div class="annotation">
     {{#if compose}}
       {{> composeBox}}
+    {{else}}
+      {{> singleAnnotation}}
+      <div class="replies">
+        {{#each annotations}}
+          {{> annotation}}
+        {{/each}}
+      </div>
     {{/if}}
+  </div>
+</template>
+
+<template name="singleAnnotation">
+  <div class="authorBlock">
+    <img src="{{author.picture}}"/>
+    <span class="author">{{author.name}}</span>
+    <time datetime={{toISOString createdAt}} title={{localISO createdAt}}>{{fromNow createdAt}}</time>
+    <div class="actionBar">
+      {{#if owner}}
+        <span class="edit">Edit</span>
+      {{/if}}
+      <span class="reply">Reply</span>
+    </div>
+  </div>
+  <div class="annotation">
+    <div class="content">{{{content}}}</div>
   </div>
 </template>
 
@@ -60,7 +79,7 @@
       <button class="createLink"><a href="#">K</a></button>
     </div>
     <div class="composeFieldContainer">
-      <div contenteditable id="composeField">{{{compose}}}</div>
+      <div contenteditable class="composeField"></div>
     </div>
     <button class="save">Save</button>
     <button class="discard">Discard</button>

@@ -1,23 +1,24 @@
 Meteor.startup(function() {
-  annotationPlaceholder = '<span class="annotation-placeholder"></span>'
+  Template.composeBox.onRendered(function() {
+    var cF = this.find(".composeField")
+    cF.innerHTML = (this.data.editing && this.data.editing.content) || this.data.content
+    cF.focus()
+    var sel   = window.getSelection()
+    var range = sel.getRangeAt(0)
+    range.selectNodeContents(cF)
+    sel.removeAllRanges()
+    sel.addRange(range)
+    sel.collapseToEnd()
+    document.execCommand('styleWithCSS',false,false)
+  })
+
   Template.composeBox.events({
     'input [contenteditable]': function(e) {
-      var hl = Session.get('composeHl')
-      hl.annotation = e.target.innerHTML
-      Session.set('composeHl', hl)
-    },
-    'focus [contenteditable]': function(e) {
-      if(e.target.innerHTML == annotationPlaceholder) {
-        e.target.innerHTML = ""
-      }
-    },
-    'blur [contenteditable]': function(e) {
-      if(e.target.innerHTML == "") {
-        e.target.innerHTML = annotationPlaceholder
-      }
+      Meteor.call("updateDraft", Template.currentData()._id, e.target.innerHTML)
     },
     'click .toolbar button': function(e) {
-      var cF = document.getElementById("composeField")
+      window.activeComposeField = Template.instance().find(".composeField")
+      var cF = activeComposeField
       cF.focus()
       var cmd = e.currentTarget.getAttribute('data-command')
       cF.normalize()
@@ -39,7 +40,7 @@ Meteor.startup(function() {
       }
       var beginRange = document.createRange()
       var endRange   = document.createRange()
-      var cF = document.getElementById("composeField")
+      var cF = Template.instance().find(".composeField")
       beginRange.setStart(cF,0)
       endRange.setEnd(cF,cF.length || cF.childNodes.length)
       if(range.startOffset > 0)
@@ -143,12 +144,13 @@ Meteor.startup(function() {
       if(!sel.isCollapsed) {
         y = createLinkRange.getBoundingClientRect().bottom - document.body.getBoundingClientRect().top
       } else {
-        y = document.getElementById("composeField").getBoundingClientRect().bottom - document.body.getBoundingClientRect().top
+        y = Template.instance().find(".composeField").getBoundingClientRect().bottom - document.body.getBoundingClientRect().top
       }
       Session.set("linkEdit", {text: sel.toString(), y: y})
     },
-    'click #composeField a': function(e) {
+    'click .composeField a': function(e) {
       console.log(e)
+      window.activeComposeField = Template.instance().find(".composeField")
       e.target.classList.add("previewedLink")
       Session.set("linkPreview", {href: e.target.getAttribute('href'), x: e.pageX, y: e.pageY+8})
       e.keepLinkPreview = true
@@ -160,23 +162,10 @@ Meteor.startup(function() {
       }
     },
     'click .save': function() {
-      var hl = Session.get('composeHl')
-      var annote = {content: hl.annotation, inReplyTo: {
-        sourceUrl:  hl.sourceUrl,
-        rects:      hl.rects,
-        sourceText: hl.sourceText
-      }}
-      Meteor.call("addAnnotation", annote, function(err, res) {
-        if(res && res.hl && res.annote) {
-          Session.set('composeHl', null)
-          Session.set('clicked', res.hl)
-        }
-      })
+      Meteor.call("saveAnnotation", Template.currentData()._id)
     },
     'click .discard': function() {
-      Session.set('composeHl', null)
-      if(Session.equals('clicked', 'composeHl')) {Session.set('clicked', false)}
-      if(Session.equals('hover'  , 'composeHl')) {Session.set('hover'  , false)}
+      Meteor.call("discardDraft", Template.currentData()._id)
     }
   })
   var selectPreviewedLink = function() {
@@ -230,7 +219,7 @@ Meteor.startup(function() {
       e.stopPropagation()
       e.preventDefault()
       if(!Template.instance().find("form").reportValidity()) { return false; }
-      document.getElementById("composeField").focus()
+      window.activeComposeField.focus()
       if(window.createLinkRange) {
         var sel = window.getSelection()
         sel.removeAllRanges()

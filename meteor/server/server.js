@@ -1,58 +1,22 @@
 Meteor.startup(function() {
-  Meteor.methods({
-    addAnnotation: function(annotation) {
-      console.log("in addAnnotation!")
-      console.log(annotation)
-      if(!this.userId) { return null }
-      check(annotation, {
-        content:   Match.nonEmptyString,
-        inReplyTo: Match.OneOf(Match.httpUrl, Match.highlight)
-      })
-      var now = new Date()
-      var hl_id = undefined
-      if(Match.test(annotation.inReplyTo, Match.highlight)) {
-        var hl = annotation.inReplyTo
-        hl.author    = this.userId
-        hl.createdAt = now
-        hl_id = Hls.insert(hl)
-        annotation.inReplyTo = hl_id
-      }
-      annotation.content   = sanitizeHtml(annotation.content, {
-        allowedTags: ['b','i','u','strike','ul','ol','li','blockquote','a','table','thead','caption','tbody','tr','th','td','pre','br'],
-        allowedAttributes: {
-          'a': ['href']
-        },
-        transformTags: {
-          'div': 'br',
-          'p': 'br'
-        }
-      })
-      annotation.author    = this.userId
-      annotation.createdAt = now
-      console.log(annotation)
-      var annote_id = Annotes.insert(annotation)
-      return {hl: hl_id, annote: annote_id}
-    }
-  })
-
   Meteor.publishComposite("annotations", function(sourceUrl) {
     check(sourceUrl, String)
-    return {
-      find: function() { return Hls.find({sourceUrl: sourceUrl}) },
+    var recursiveAnnotes = {
+      find: function(hl) {
+        return Annotes.find({inReplyTo: hl._id})
+      },
       children: [
         {
-          find: function(hl) {
-            return Annotes.find({inReplyTo: hl._id})
-          },
-          children: [
-            {
-              find: function(annote) {
-                return Meteor.users.find(annote.author, {fields: {profile: 1, "services.google.picture": 1}})
-              }
-            }
-          ]
+          find: function(annote) {
+            return Meteor.users.find(annote.author, {fields: {profile: 1, "services.google.picture": 1}})
+          }
         }
       ]
+    }
+    recursiveAnnotes.children.push(recursiveAnnotes)
+    return {
+      find: function() { return Hls.find({sourceUrl: sourceUrl}) },
+      children: [ recursiveAnnotes ]
     };
   })
 

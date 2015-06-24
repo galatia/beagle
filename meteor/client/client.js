@@ -24,9 +24,14 @@ Meteor.startup(function() {
     }
   })
 
-  Template.composeBox.onRendered(function() {
-    this.find('#composeField').focus()
-    document.execCommand('styleWithCSS',false,false)
+  Template.singleAnnotation.events({
+    'click .edit':  function(e) {
+      Meteor.call("edit", this._id)
+    },
+    'click .reply': function(e) {
+      console.log(this)
+      Meteor.call("addDraftAnnotation", this._id)
+    }
   })
 
   function scrollTo(id) {
