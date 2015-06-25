@@ -7,38 +7,65 @@
 </head>
 
 <body>
-  {{> loginButtons}}
 </body>
 
 <template name="sidebar">
-  <div class="sidebar">
-    <div class="toolbar">
-      <div class="sortMenu">
-        <i class="fa fa-sort-amount-desc"></i>
-        <div class="options">
-          <div class="option" data-sortOrder="newThreads">New threads</div>
-          <div class="option" data-sortOrder="recentActivity">Recent activity</div>
-          <div class="option" data-sortOrder="pageOrdered">Page-ordered</div>
+  {{#if currentUser}}
+    <div class="sidebar">
+      <div class="topToolbar">
+        <div class="leftToolbar">
+          <div class="screenshotButton">
+            <img class="icon" src="/entypo/image.svg" alt="Image pictogram">
+          </div>
+          <div class="highlightButton">
+            <img class="icon" src="/entypo/tag.svg" alt="Tag pictogram">
+          </div>
+
+          <div class="separator"></div>
+
+          <div class="sortMenu">
+            <i class="fa fa-sort-amount-desc"></i>
+            <div class="options">
+              <div class="optionHeader">Sort by...</div>
+              <div class="option" data-sortOrder="newThreads">New threads</div>
+              <div class="option" data-sortOrder="recentActivity">Recent activity</div>
+              <div class="option" data-sortOrder="pageOrdered">Page order</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="rightToolbar">
+          <div class="popOutButton">
+            <a href="{{thisPage}}" target="_blank"><img src="/entypo/resize-full-screen.svg"></a>
+          </div>
+          <div class="accountMenu">
+            <img src="{{currentUser.services.google.picture}}">
+            <i class="fa fa-caret-down"></i>
+            <div class="loginButtonContainer">
+              {{> loginButtons}}
+            </div>
+          </div>
         </div>
       </div>
+      {{#each highlights}}
+        {{> highlight}}
+      {{/each}}
     </div>
-    <p>The source URL is: {{sourceUrl}}</p>
-    <!-- <p>Its creator is: {{creator}}</p> -->
-    <p><button class="screenshot-taker">Take a screenshot</button></p>
-    {{#each highlights}}
-      {{> highlight}}
-    {{/each}}
-  </div>
-  {{#with linkPreview}}
-    {{> linkPreviewer}}
-  {{/with}}
-  {{#with linkEdit}}
-    {{> linkEditor}}
-  {{/with}}
+    {{#with linkPreview}}
+      {{> linkPreviewer}}
+    {{/with}}
+    {{#with linkEdit}}
+      {{> linkEditor}}
+    {{/with}}
+  {{else}}
+    <div class="loggedOut">
+      {{> loginButtons}}
+    </div>
+  {{/if}}
 </template>
 
 <template name="highlight">
-  <div class="highlight {{#if hovered}}hovered{{/if}} {{#if clicked}}clicked{{/if}}" id="{{_id}}">
+  <div class="highlight {{#if hover}}hover{{/if}} {{#if clicked}}clicked{{/if}}" id="{{_id}}">
     <div class="sourceText" contenteditable></div>
     <div class="replies">
       {{#each annotations}}
@@ -81,7 +108,9 @@
     <div class="authorBlock">
       {{#unless deleted}}
         <img class="picture" src={{author.picture}} title={{author.name}}>
-        <time datetime={{toISOString createdAt}} title={{localISO createdAt}}>{{fromNow createdAt}}</time>
+        {{#unless compose}}
+          <time datetime={{toISOString createdAt}} title={{localISO createdAt}}>{{fromNow createdAt}}</time>
+        {{/unless}}
       {{/unless}}
     </div>
   </div>

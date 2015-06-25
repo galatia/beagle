@@ -1,4 +1,6 @@
 Meteor.startup(function() {
+  Template.registerHelper("thisPage", function() { return window.location.href; })
+
   Tracker.autorun(function() {
     if(Session.get("sourceUrl")) {
       Meteor.subscribe("annotations", Session.get("sourceUrl"))
@@ -8,7 +10,7 @@ Meteor.startup(function() {
   Template.registerHelper("toISOString", function(date) { return date.toISOString() })
   Template.registerHelper("localISO", function(date) { return moment(date).format("YYYY-MM-DD HH:mm ZZ") })
   Template.registerHelper("calendar", function(date) { return moment(date).calendar() })
-  Template.registerHelper("fromNow", function(date) { return moment(date).fromNow() })
+  Template.registerHelper("fromNow", function(date) { return moment(date).from(new Date(TimeSync.serverTime())) })
 
   Session.setDefault("sortOrder", "pageOrdered")
   function sortOrder() {
@@ -37,8 +39,8 @@ Meteor.startup(function() {
   })
 
   Template.highlight.helpers({
-    hovered: function() {
-      return Session.equals("hovered", this._id) // return true if hovered==hl_id
+    hover: function() {
+      return Session.equals("hover", this._id) // return true if hover==hl_id
     },
     clicked: function() {
       return Session.equals("clicked", this._id)

@@ -419,8 +419,7 @@ html[dir='rtl'] #viewerContainer {
   width: 200px;
   height: 32px;
   background-color: #424242; /* fallback */
-  background-image: url(images/texture.png),
-                    linear-gradient(hsla(0,0%,30%,.99), hsla(0,0%,25%,.95));
+  background-image: linear-gradient(hsla(0,0%,30%,.99), hsla(0,0%,25%,.95));
 }
 html[dir='ltr'] #toolbarSidebar {
   box-shadow: inset -1px 0 0 rgba(0, 0, 0, 0.25),
@@ -439,8 +438,7 @@ html[dir='rtl'] #toolbarSidebar {
   position: relative;
   height: 32px;
   background-color: #474747; /* fallback */
-  background-image: url(images/texture.png),
-                    linear-gradient(hsla(0,0%,32%,.99), hsla(0,0%,27%,.95));
+  background-image: linear-gradient(hsla(0,0%,32%,.99), hsla(0,0%,27%,.95));
 }
 html[dir='ltr'] #toolbarContainer, .findbar, .secondaryToolbar {
   box-shadow: inset 1px 0 0 hsla(0,0%,100%,.08),

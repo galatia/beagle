@@ -196,6 +196,13 @@ function makeHoverbox(x,y) {
   hoverbox.classList.add('hoverbox')
   hoverbox.style.left = x + "px"
   hoverbox.style.top  = y + "px"
+  var icon
+  if (document.getElementById('viewerContainer').classList.contains('screenshot-mode')) {
+    icon = "image.svg"
+  } else {
+    icon = "tag.svg"
+  }
+  hoverbox.innerHTML = '<img src="'+icon+'">'
   document.body.appendChild(hoverbox)
 }
 function highlightHandler(event) {

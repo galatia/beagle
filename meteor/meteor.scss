@@ -4,7 +4,16 @@ $bgColor:  rgba(242,242,242,1.0);
 * {
   box-sizing: border-box;
   font-family: 'Clear Sans';
+}
+.sidebar * {
   color: $pseudoBlack;
+}
+.loggedOut #login-buttons-google {
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  position: relative;
+  top: 30px;
 }
 html, body, .sidebar {
   margin: 0;
@@ -14,16 +23,50 @@ html, body, .sidebar {
 }
 .sidebar {
   padding: 12px;
-  .toolbar {
-    .sortMenu {
-      background: #f0f0f0;
-      float:right;
-      position: relative;
-      border: 1px outset #ddd;
-      i.fa {
-        font-size: 18px;
-        margin: 2px;
+  padding-top: 44px;
+  position:relative;
+  .topToolbar {
+    z-index: 100;
+    position: fixed;
+    width: 100%;
+    height: 32px;
+    top: 0;
+    left: 0;
+    right: 0;
+    background-image: linear-gradient(rgba(81, 81, 81, 0.992157), rgba(69, 69, 69, 0.952941));
+    border-left: 1px solid rgba(230,230,230,0.5);
+    padding-left: 11px;
+    * { color: rgb(230,230,230); }
+    display: flex;
+    justify-content: space-between;
+    & > div, & > div > div {
+      cursor: pointer;
+      display: inline-block;
+    }
+    i.fa {
+      font-size: 18px;
+      margin: 2px;
+    }
+    .leftToolbar {
+      padding-top: 5px;
+    }
+    .popOutButton, .highlightButton, .screenshotButton {
+      img {
+        width: 20px;
+        vertical-align: bottom;
+        -webkit-filter: invert(86%);
       }
+    }
+    .screenshotButton {
+      margin-right: 4px;
+    }
+    .popOutButton {
+      vertical-align: top;
+      margin-top: 6px;
+      margin-right: 7px;
+    }
+    .sortMenu {
+      position: relative;
       .options {
         font-size: smaller;
         display: none;
@@ -33,22 +76,52 @@ html, body, .sidebar {
         right: 0;
         top: 100%;
         width: auto;
-        .option {
+        div {
           width: 100%;
           padding: 4px;
           white-space: nowrap;
           text-align: right;
-          background: #f0f0f0;
-          border: 1px solid #ddd;
-          &:hover {
-            border-style: inset;
+          background: rgb(70,70,70);
+          color: inherit;
+          border: 1px solid transparent;
+          &.option:hover {
+            border: 1px solid #ddd;
+          }
+          &.optionHeader {
+            cursor: default;
+            text-align: left;
+            color: rgb(240,240,240);
           }
         }
       }
       &:hover {
-        border-style: inset;
         .options {
           display:block;
+        }
+      }
+    }
+    .rightToolbar {
+      height: 100%;
+      .accountMenu {
+        .loginButtonContainer {
+          margin-top: -7px;
+          background-color: rgb(70,70,70);
+          display: none;
+          position: absolute;
+          top: 99%;
+          right: 0;
+        }
+        &:hover .loginButtonContainer {
+          display: block;
+        }
+        position: relative;
+        img {
+          padding: 2px;
+          height: 32px;
+        }
+        i {
+          position:relative;
+          right: 2px;
         }
       }
     }
@@ -205,6 +278,9 @@ span.action {
 .clicked .sourceText {
   background-color: rgba(252,218,173,1.0);
 }
+.hover .sourceText {
+  background-color: rgba(156,230,255,.5);
+}
 
 .singleAnnotation {
   display: flex;
@@ -252,7 +328,7 @@ span.action {
         content: "Write your annotation here";
         color: #999;
         font-style: italic;
-        font-weight: 100;
+        font-weight: 300;
       }
     }
   }
@@ -302,6 +378,10 @@ span.action {
       }
     }
   }
+}
+
+.content .katex-display {
+  font-size: x-small;
 }
 
 @font-face {

@@ -127,14 +127,17 @@ Meteor.startup(function() {
           Hls.remove(hl_id)
         }
         */
-        var inReplyTo = Annotes.findOne(id).inReplyTo
+        var annote = Annotes.findOne(id)
+        var inReplyTo
+        if(annote) { inReplyTo = annote.inReplyTo }
         var children = Annotes.find({inReplyTo: id}).count()
         if(children) {
           Annotes.update({_id: id, author: this.userId}, {$set: {content: '<i class="deleted">Deleted</i>', author: null, createdAt: null, publishedAt: null, editedAt: null, editing: null, deleted: true}})
         } else {
           Annotes.remove({_id: id, author: this.userId})
+          Hls.remove({_id: id})
         }
-        if(Annotes.findOne(inReplyTo).deleted) {
+        if(Annotes.findOne(inReplyTo).deleted || Hls.findOne(inReplyTo)) {
           delete_(inReplyTo)
         }
       }

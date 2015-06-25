@@ -57,9 +57,9 @@
       })
     } else if (message.hover !== undefined) {
       if (message.hover) {
-        Session.set("hovered", message._id) // hl_id is the one thing set to hovered
+        Session.set("hover", message._id) // hl_id is the one thing set to hover
       } else {
-        Session.set("hovered", false)
+        Session.set("hover", false)
       }
     } else if (message.clicked !== undefined) {
       if(message.clicked) {

@@ -1,5 +1,3 @@
-var appHost  = 'http://localhost:3000/' //'http://QfjWnhEakV93XtaEjWaxqFZws.meteor.com'
-
 ports = {}
 var listener = function (port) {
   var id = port.sender.tab.id

@@ -2,7 +2,7 @@ Meteor.startup(function() {
   Session.setDefault("pdfCreator", null)
 
   Template.sidebar.events({
-    'click .screenshot-taker': function() {
+    'click .screenshotButton': function() {
       port.postMessage({mode: 'screenshot'})
     },
     'click .sidebar': function() {
@@ -18,10 +18,10 @@ Meteor.startup(function() {
 
   Template.highlight.events({
     'mouseenter .highlight': function() {
-      Session.set("hovered", this._id)
+      Session.set("hover", this._id)
     },
     'mouseleave .highlight': function() {
-      Session.set("hovered", false)
+      Session.set("hover", false)
     },
     'click .sourceText': function(e) {
       Session.set("clicked", this._id)

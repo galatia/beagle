@@ -2,21 +2,28 @@
   position: absolute;
   transform: translateX(-50%);
   height: 35px;
-  width: 50px; /* TODO depend on buttons */
-  background: white;
-  border: 3px solid #777;
+  width: 35px; /* TODO depend on buttons */
+  background-image: linear-gradient(rgba(81, 81, 81, 0.992157), rgba(69, 69, 69, 0.952941));
   border-radius: 4px;
+  padding-top: 2px;
+  border: 3px solid rgb(81,81,81);
   box-sizing: border-box;
   direction: ltr;
   z-index: 999;
+  text-align: center;
+}
+
+.hoverbox img {
+  width: 25px;
+  -webkit-filter: invert(92%);
 }
 
 .hoverbox::before {
   transform: rotate(45deg);
-  background: #fff;
+  background: rgb(81,81,81);
   top: -7px;
-  border-left: 3px solid #777;
-  border-top: 3px solid #777;
+  border-left: 3px solid rgb(81,81,81);
+  border-top: 3px solid rgb(81,81,81);
   content: "";
   display: block;
   height: 6px;
