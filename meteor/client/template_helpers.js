@@ -49,13 +49,10 @@ Meteor.startup(function() {
     return Annotes.find({inReplyTo: this._id}, {sort: sortOrder()}).fetch()
   })
 
-  Template.annotation.helpers({
+  Template.singleAnnotation.helpers({
     compose: function() {
       return this.draft || this.editing
-    }
-  })
-
-  Template.singleAnnotation.helpers({
+    },
     author: function() {
       var user = Meteor.users.findOne(this.author)
       var profile = user.profile

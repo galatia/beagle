@@ -1,4 +1,5 @@
 $pseudoBlack: rgba(91,106,114,1.0);
+$bgColor:  rgba(242,242,242,1.0);
 
 * {
   box-sizing: border-box;
@@ -9,9 +10,10 @@ html, body, .sidebar {
   margin: 0;
   padding: 0;
   height: 100%;
+  background-color: $bgColor;
 }
 .sidebar {
-  padding: 2px;
+  padding: 12px;
   .toolbar {
     .sortMenu {
       background: #f0f0f0;
@@ -60,22 +62,32 @@ html, body, .sidebar {
   text-align: right;
 }
 span.action {
-  opacity: 0.5;
+  opacity: 0.55;
+  padding: 3px;
   &:hover, &:focus {
-    opacity: 0.85;
-    outline: 1px solid rgba(230,230,230,0.3);
+    opacity: 0.9;
   }
 }
-.composeBox .toolbar .action {
-  margin-right: 0.5em;
+.composeBox .toolbar {
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
+  .action {
+    flex: 1 0 auto;
+    text-align: center;
+    &:hover, &:focus {
+      outline: 1px solid #dcdcdc;
+    }
+  }
 }
 .actionList .action i.fa {
   font-size: 16px;
 }
 
-.singleAnnotation {
-  background: #f0f0f0;
-  border: 1px solid #f0f0f0;
+.contentContainer {
+  background: white;
+  border: 1px solid white;
+  box-shadow: 0 -1px 0 #e5e5e5,0 0 2px rgba(0,0,0,.12),0 1px 4px rgba(0,0,0,.20);
 }
 
 .annotation {
@@ -89,36 +101,41 @@ span.action {
     position: relative;
     z-index: 1;
   }
+  padding-bottom: 0.5px;
+}
+.singleAnnotation {
+  border-left-style: solid;
+  border-left-width: 2px;
+  margin: 6px 0px;
 }
 
 .replies {
-  margin-top: -5px;
-  padding-top: 5px;
+  margin-top: -7px;
+  padding-top: 0.1px;
   margin-left: 2px;
   border-width: 2px;
   border-left-style: solid;
   padding-left: 3px;
   .singleAnnotation {
-    margin: 5px 0px;
     &::before {
       content: '.';
       color: transparent;
-      background: white;
+      background: $bgColor;
       position:absolute;
       top: 0;
-      left: -6px;
+      left: -7px;
       width: 3px;
       height: 50%;
       border-width: 2px;
       border-bottom-style: solid;
       border-left-style: solid;
-      border-bottom-left-radius: 5px 7px;
+      border-bottom-left-radius: 2px;
     }
   }
   .annotation:last-child::before {
     content: '.';
     color: transparent;
-    background: white;
+    background: $bgColor;
     position: absolute;
     top: 3px;
     left: -5px;
@@ -126,82 +143,99 @@ span.action {
     height: 100%;
   }
 }
-.replies {
-  $branch-color: rgba(208,199,255,1.0);
-  border-color: $branch-color;
-  .singleAnnotation::before {
-    border-color: $branch-color;
-  }
-}
-.replies .replies {
+
+.replies, .replies .replies .replies .replies, .replies .replies .replies .replies .replies .replies .replies .replies .replies {
   $branch-color: rgba(254,231,158,1.0);
   border-color: $branch-color;
-  .singleAnnotation::before {
-    border-color: $branch-color;
+  .singleAnnotation {
+    border-left-color: $branch-color;
+    &::before {
+      border-color: $branch-color;
+    }
   }
 }
-.replies .replies .replies {
-  $branch-color: rgba(219,242,249,1.0);
+.replies .replies, .replies .replies .replies .replies .replies .replies .replies  {
+  $branch-color: rgba(230,126,255,1.0);
   border-color: $branch-color;
-  .singleAnnotation::before {
-    border-color: $branch-color;
+  .singleAnnotation {
+    border-left-color: $branch-color;
+    &::before {
+      border-color: $branch-color;
+    }
   }
 }
-.replies .replies .replies .replies {
-  $branch-color: rgba(247,169,147,0.6);
+.replies .replies .replies, .replies .replies .replies .replies .replies .replies .replies .replies, .replies .replies .replies .replies .replies .replies .replies .replies .replies .replies .replies .replies {
+  $branch-color: rgba(77,194,255,1.0);
   border-color: $branch-color;
-  .singleAnnotation::before {
-    border-color: $branch-color;
+  .singleAnnotation {
+    border-left-color: $branch-color;
+    &::before {
+      border-color: $branch-color;
+    }
   }
 }
-.replies .replies .replies .replies .replies {
-  $branch-color: rgba(169,199,140,0.7);
+.replies .replies .replies .replies .replies, .replies .replies .replies .replies .replies .replies .replies .replies .replies .replies {
+  $branch-color: rgba(240,130,39,1.0);
   border-color: $branch-color;
-  .singleAnnotation::before {
-    border-color: $branch-color;
+  .singleAnnotation {
+    border-left-color: $branch-color;
+    &::before {
+      border-color: $branch-color;
+    }
   }
 }
-.replies .replies .replies .replies .replies .replies {
-  $branch-color: rgba(171,213,249,0.7);
+.replies .replies .replies .replies .replies .replies, .replies .replies .replies .replies .replies .replies .replies .replies .replies .replies .replies {
+  $branch-color: rgba(64,172,105,0.7);
   border-color: $branch-color;
-  .singleAnnotation::before {
-    border-color: $branch-color;
-  }
-}
-.replies .replies .replies .replies .replies .replies .replies {
-  $branch-color: rgba(241,126,64,0.7);
-  border-color: $branch-color;
-  .singleAnnotation::before {
-    border-color: $branch-color;
+  .singleAnnotation {
+    border-left-color: $branch-color;
+    &::before {
+      border-color: $branch-color;
+    }
   }
 }
 
 .sourceText {
   display: inline-block;
-  background-color: rgba(255,255,60,.3);
+  background-color: rgba(254,254,189,1.0);
+  font-weight: 300;
+  font-size: 15.25px;
+  margin-bottom: 6px;
 }
 .clicked .sourceText {
-  background-color: rgba(255,130,0,.3);
+  background-color: rgba(252,218,173,1.0);
 }
 
-.actionBar {
-  clear: right;
-  float: right;
-  padding-left: 10px;
-}
+.singleAnnotation {
+  display: flex;
+  justify-content: space-around;
 
-.authorBlock {
-  img {
-    min-height: 100%;
-    max-height: 1.5em;
-    vertical-align: top;
-    border-radius: 50%;
+  .contentContainer {
+    flex: 1 0 6em;
+    margin-right: 16px;
+    padding: 5px;
+    padding-right: 8px;
+    .actionBar {
+      width: auto;
+      float: right;
+    }
   }
-  time {
-    float:right;
-    color: #666;
-    font-size: smaller;
-    font-weight: 300;
+
+  .authorBlock {
+    flex: 0 0 4em;
+    text-align: left;
+    img {
+      display: block;
+      width: 100%;
+      max-width: 24px;
+      border-radius: 5%;
+    }
+    time {
+      display: block;
+      color: #666;
+      font-size: smaller;
+      font-weight: 300;
+    }
   }
 }
 
@@ -216,8 +250,9 @@ span.action {
       display: inline-block;
       &:empty::before {
         content: "Write your annotation here";
-        color: #666;
-        font-style: italic
+        color: #999;
+        font-style: italic;
+        font-weight: 100;
       }
     }
   }
@@ -235,7 +270,7 @@ span.action {
   #linkPreviewer, #linkEditor {
     max-width: 100%;
     background-color: white;
-    box-shadow: 2px 2px 2px rgba(80,80,80,.3), 0px 0px 4px rgba(200,200,200,.8);
+    box-shadow: 1px 1px 2px rgba(80,80,80,.3), 0px 0px 4px rgba(200,200,200,.8);
     form {
       display: table;
       width: 100%;

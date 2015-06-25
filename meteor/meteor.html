@@ -1,6 +1,9 @@
 <head>
   <title>BEAGLE</title>
   <link rel="stylesheet" href="/font-awesome-4.3.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="/katex/katex.min.css">
+  <script src="/katex/katex.min.js"></script>
+  <script src="/katex/contrib/auto-render.min.js"></script>
 </head>
 
 <body>
@@ -37,19 +40,17 @@
 <template name="highlight">
   <div class="highlight {{#if hovered}}hovered{{/if}} {{#if clicked}}clicked{{/if}}" id="{{_id}}">
     <div class="sourceText" contenteditable></div>
-    {{#each annotations}}
-      {{> annotation}}
-    {{/each}}
+    <div class="replies">
+      {{#each annotations}}
+        {{> annotation}}
+      {{/each}}
+    </div>
   </div>
 </template>
 
 <template name="annotation">
   <div class="annotation">
-    {{#if compose}}
-      {{> composeBox}}
-    {{else}}
-      {{> singleAnnotation}}
-    {{/if}}
+    {{> singleAnnotation}}
     {{#if annotations}}
       <div class="replies">
         {{#each annotations}}
@@ -62,19 +63,26 @@
 
 <template name="singleAnnotation">
   <div class="singleAnnotation">
-    <div class="authorBlock">
-      <img src="{{author.picture}}"/>
-      <span class="author">{{author.name}}</span>
-      <time datetime={{toISOString createdAt}} title={{localISO createdAt}}>{{fromNow createdAt}}</time>
-      <div class="actionBar">
-        {{#if owner}}
-          <span class="edit action"><i class="fa fa-pencil"></i></span>
-        {{/if}}
-        <span class="reply action"><i class="fa fa-reply"></i></span>
-      </div>
-    </div>
     <div class="contentContainer">
-      <div class="content">{{{content}}}</div>
+      {{#if compose}}
+        {{> composeBox}}
+      {{else}}
+        <div class="actionBar">
+          {{#if owner}}
+            <span class="edit action" tabindex=0><i class="fa fa-pencil"></i></span>
+          {{/if}}
+          {{#unless deleted}}
+            <span class="reply action" tabindex=0><i class="fa fa-reply"></i></span>
+          {{/unless}}
+        </div>
+        <div class="content">{{{content}}}</div>
+      {{/if}}
+    </div>
+    <div class="authorBlock">
+      {{#unless deleted}}
+        <img class="picture" src={{author.picture}} title={{author.name}}>
+        <time datetime={{toISOString createdAt}} title={{localISO createdAt}}>{{fromNow createdAt}}</time>
+      {{/unless}}
     </div>
   </div>
 </template>
@@ -100,11 +108,11 @@
     </div>
 
     <div class="actionList">
-      <span class="save action" tabindex=2><i class="fa fa-check"></i></span>
-      <span class="discard action" tabindex=3><i class="fa fa-times"></i></span>
       {{#if editing.content}}
         <span class="delete action"><i class="fa fa-trash-o"></i></span>
       {{/if}}
+      <span class="discard action" tabindex=3><i class="fa fa-times"></i></span>
+      <span class="save action" tabindex=2><i class="fa fa-check"></i></span>
     </div>
 
   </form>

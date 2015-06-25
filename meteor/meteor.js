@@ -117,6 +117,7 @@ Meteor.startup(function() {
       },
     delete:
       function delete_(id) {
+        /* Recursive delete
         var hl_id = Annotes.findOne(id).inReplyTo
         Annotes.remove({_id: id})
         Annotes.find({inReplyTo: id}).forEach(function(child) {
@@ -125,6 +126,35 @@ Meteor.startup(function() {
         if (!(Annotes.find({inReplyTo: hl_id}).count())) {
           Hls.remove(hl_id)
         }
+        */
+        var inReplyTo = Annotes.findOne(id).inReplyTo
+        var children = Annotes.find({inReplyTo: id}).count()
+        if(children) {
+          Annotes.update({_id: id, author: this.userId}, {$set: {content: '<i class="deleted">Deleted</i>', author: null, createdAt: null, publishedAt: null, editedAt: null, editing: null, deleted: true}})
+        } else {
+          Annotes.remove({_id: id, author: this.userId})
+        }
+        if(Annotes.findOne(inReplyTo).deleted) {
+          delete_(inReplyTo)
+        }
       }
   })
+  moment.locale('en', {
+    relativeTime : {
+      future: "in %s",
+      past:   "%s ago",
+      s:  "seconds",
+      ss: "%dsec",
+      m:  "1min",
+      mm: "%dmin",
+      h:  "1hr",
+      hh: "%dhr",
+      d:  "1d",
+      dd: "%dd",
+      M:  "a month",
+      MM: "%d months",
+      y:  "a year",
+      yy: "%d years"
+    }
+  });
 })

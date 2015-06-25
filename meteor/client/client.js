@@ -1,7 +1,6 @@
 Meteor.startup(function() {
   Session.setDefault("pdfCreator", null)
 
-
   Template.sidebar.events({
     'click .screenshot-taker': function() {
       port.postMessage({mode: 'screenshot'})
@@ -24,7 +23,7 @@ Meteor.startup(function() {
     'mouseleave .highlight': function() {
       Session.set("hovered", false)
     },
-    'click .highlight': function(e) {
+    'click .sourceText': function(e) {
       Session.set("clicked", this._id)
       e.stopPropagation()
     },
@@ -41,6 +40,14 @@ Meteor.startup(function() {
       console.log(this)
       Meteor.call("addDraftAnnotation", this._id)
     }
+  })
+
+  Template.singleAnnotation.onRendered(function() {
+    var self = this
+    self.autorun(function() {
+      Template.currentData()
+      window.renderMathInElement(Template.instance().find(".content"))
+    })
   })
 
   function scrollTo(id) {
@@ -78,9 +85,13 @@ Meteor.startup(function() {
     if(Session.get("clicked")) {
       Session.get("sortOrder")
       Annotes.find()
-      setTimeout(function() {
-        scrollTo(Session.get("clicked"))
-      },75)
+      if(!window.suppressScrollTo) {
+        setTimeout(function() {
+          scrollTo(Session.get("clicked"))
+        },75)
+      } else {
+        window.suppressScrollTo = undefined;
+      }
     }
   })
 })

@@ -11,6 +11,7 @@ Meteor.startup(function() {
     var cF = this.find(".composeField")
     cF.innerHTML = (this.data.editing && this.data.editing.content) || this.data.content
     cF.focus()
+    window.suppressScrollTo = true;
     Session.set("clicked", findHl(Template.currentData()._id))
     var sel   = window.getSelection()
     var range = sel.getRangeAt(0)
@@ -25,7 +26,8 @@ Meteor.startup(function() {
     'input [contenteditable]': function(e) {
       Meteor.call("updateDraft", Template.currentData()._id, e.target.innerHTML)
     },
-    'click .toolbar button': function(e) {
+    'click .toolbar .action, keypress .toolbar .action': function(e) {
+      if(e.keyCode && !e.keyCode === 13) return true;
       window.activeComposeField = Template.instance().find(".composeField")
       var cF = activeComposeField
       cF.focus()
@@ -36,7 +38,7 @@ Meteor.startup(function() {
         cF.normalize()
       }
     },
-    'click .toolbar button.removeFormat': function(e) {
+    'click .toolbar .action.removeFormat': function(e) {
       document.execCommand('removeFormat')
       var sel = window.getSelection()
       var range = sel.getRangeAt(0)
@@ -146,7 +148,7 @@ Meteor.startup(function() {
       cleanup(cF)
       cF.normalize()
     },
-    'click .toolbar button.createLink': function(e) {
+    'click .toolbar .action.createLink': function(e) {
       var sel = window.getSelection()
       var y
       window.createLinkRange = sel.getRangeAt(0)
@@ -170,17 +172,20 @@ Meteor.startup(function() {
         $(".previewedLink").removeClass("previewedLink")
       }
     },
-    'click .save': function() {
+    'click .save, keypress .save': function(e) {
+      if(e.keyCode && !e.keyCode === 13) return true;
       Meteor.call("saveAnnotation", Template.currentData()._id)
     },
-    'click .discard': function() {
+    'click .discard, keypress .discard': function(e) {
+      if(e.keyCode && !e.keyCode === 13) return true;
       Meteor.call("discardDraft", Template.currentData()._id)
     },
     'click .delete': function() {
       var id = Template.currentData()._id
-      children = Annotes.find({inReplyTo: id}).count()
+      // Recursive delete is disabled
+      children = 0 //Annotes.find({inReplyTo: id}).count()
       if (window.confirm(children
-          ? "This action will also delete all subtrees and cannot be undone. Confirm?"
+          ? "The post will remain in the tree but be marked as deleted. Confirm?"
           : "This deletion cannot be undone. Confirm?")) {
         Meteor.call("delete", id)
       }
