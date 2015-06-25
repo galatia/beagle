@@ -68,9 +68,9 @@
       <time datetime={{toISOString createdAt}} title={{localISO createdAt}}>{{fromNow createdAt}}</time>
       <div class="actionBar">
         {{#if owner}}
-          <span class="edit">Edit</span>
+          <span class="edit action"><i class="fa fa-pencil"></i></span>
         {{/if}}
-        <span class="reply">Reply</span>
+        <span class="reply action"><i class="fa fa-reply"></i></span>
       </div>
     </div>
     <div class="contentContainer">
@@ -80,32 +80,34 @@
 </template>
 
 <template name="composeBox">
-  <div class="composeBox">
+  <form class="composeBox">
 
     <div class="toolbar">
-      <button data-command="bold"><i class="fa fa-bold"></i></button>
-      <button data-command="italic"><i class="fa fa-italic"></i></button>
-      <button data-command="underline"><i class="fa fa-underline"></i></button>
-      <button data-command="strikeThrough"><i class="fa fa-strikethrough"></i></button>
-      <button data-command="insertUnorderedList"><i class="fa fa-list-ul"></i></button>
-      <button data-command="insertOrderedList"><i class="fa fa-list-ol"></i></button>
-      <button data-command="indent"><i class="fa fa-indent"></i></button>
-      <button data-command="outdent"><i class="fa fa-outdent"></i></button>
-      <button class="removeFormat"><i>T</i><sub><small>X</small></sub></button>
-      <button class="createLink"><i class="fa fa-link"></i></button>
+      <span class="action" data-command="bold"><i class="fa fa-bold"></i></span>
+      <span class="action" data-command="italic"><i class="fa fa-italic"></i></span>
+      <span class="action" data-command="underline"><i class="fa fa-underline"></i></span>
+      <span class="action" data-command="strikeThrough"><i class="fa fa-strikethrough"></i></span>
+      <span class="action" data-command="insertUnorderedList"><i class="fa fa-list-ul"></i></span>
+      <span class="action" data-command="insertOrderedList"><i class="fa fa-list-ol"></i></span>
+      <span class="action" data-command="indent"><i class="fa fa-indent"></i></span>
+      <span class="action" data-command="outdent"><i class="fa fa-outdent"></i></span>
+      <span class="removeFormat action"><i>T</i><sub><small>X</small></sub></span>
+      <span class="createLink action"><i class="fa fa-link"></i></span>
     </div>
 
     <div class="composeFieldContainer">
-      <div contenteditable class="composeField"></div>
+      <div contenteditable class="composeField" tabindex=1></div>
     </div>
 
-    <button class="save">Save</button>
-    <button class="discard">Discard</button>
-    {{#if editing.content}}
-      <button class="delete">Delete</button>
-    {{/if}}
+    <div class="actionList">
+      <span class="save action" tabindex=2><i class="fa fa-check"></i></span>
+      <span class="discard action" tabindex=3><i class="fa fa-times"></i></span>
+      {{#if editing.content}}
+        <span class="delete action"><i class="fa fa-trash-o"></i></span>
+      {{/if}}
+    </div>
 
-  </div>
+  </form>
 </template>
 
 <template name="linkPreviewer">

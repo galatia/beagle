@@ -17,7 +17,7 @@ Meteor.startup(function() {
     } else if (Session.equals("sortOrder", "recentActivity")) {
       return {draft: -1, activityAt: -1}
     } else {
-      return {"contentOrder.page": 1, "contentOrder.y": -1, "contentOrder.x": 1}
+      return {"contentOrder.page": 1, "contentOrder.y": -1, "contentOrder.x": 1, publishedAt: 1}
     }
   }
 
