@@ -21,6 +21,9 @@ Meteor.startup(function() {
     'click .highlight': function(e) {
       Session.set("clicked", this._id)
       e.stopPropagation()
+    },
+    'input .sourceText': function(e) {
+      Meteor.call("reviseSourceText", Template.currentData()._id, e.target.innerHTML)
     }
   })
 
@@ -36,6 +39,7 @@ Meteor.startup(function() {
 
   function scrollTo(id) {
     var elem   = document.getElementById(id)
+    elem = elem.getElementsByClassName("sourceText")[0];
     if(!elem) return false;
     var rect   = elem.getBoundingClientRect()
     var top    = rect.top

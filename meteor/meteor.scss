@@ -1,0 +1,160 @@
+* {
+  box-sizing: border-box;
+}
+html, body, .sidebar {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+.sidebar {
+  padding: 2px;
+  .highlight {
+    margin-bottom: 8px;
+  }
+}
+
+
+.singleAnnotation {
+  background: #f0f0f0;
+  border: 1px solid #f0f0f0;
+}
+
+.annotation {
+  position: relative;
+  z-index: 0;
+  .singleAnnotation {
+    position: relative;
+    z-index: 2;
+  }
+  .replies {
+    position: relative;
+    z-index: 1;
+  }
+}
+
+$branch-color: #ddd;
+.replies {
+  margin-top: -5px;
+  padding-top: 5px;
+  margin-left: 2px;
+  border-left: 1px solid $branch-color;
+  padding-left: 3px;
+  .singleAnnotation {
+    margin: 5px 0px;
+    &::before {
+      content: '.';
+      color: transparent;
+      background: white;
+      position:absolute;
+      top: 0;
+      left: -5px;
+      width: 3px;
+      height: 50%;
+      border-bottom: 1px solid $branch-color;
+      border-left: 1px solid $branch-color;
+      border-bottom-left-radius: 5px;
+    }
+  }
+  .annotation:last-child::before {
+    content: '.';
+    color: transparent;
+    background: white;
+    position: absolute;
+    top: 3px;
+    left: -5px;
+    width: 2px;
+    height: 100%;
+  }
+}
+
+.sourceText {
+  display: inline-block;
+  background-color: rgba(255,255,60,.3);
+}
+.clicked .sourceText {
+  background-color: rgba(255,130,0,.3);
+}
+
+.actionBar {
+  clear: right;
+  float: right;
+  padding-left: 10px;
+}
+
+.authorBlock {
+  img {
+    min-height: 100%;
+    max-height: 1.5em;
+    vertical-align: top;
+    border-radius: 50%;
+  }
+  time {
+    float:right;
+    color: #666;
+    font-size: smaller;
+  }
+}
+
+.composeBox {
+  .composeFieldContainer, .composeField {
+    width: 100%;
+  }
+  .composeFieldContainer {
+    padding-bottom: 5px;
+    padding-top: 5px;
+    *[contenteditable] {
+      display: inline-block;
+      &:empty::before {
+        content: "Write your annotation here";
+        color: #666;
+        font-style: italic
+      }
+    }
+  }
+}
+
+.linkPreviewContainer, .linkEditContainer {
+  position: absolute;
+  z-index: 10;
+  width: 100%;
+  text-align: center;
+  padding: 0 3%;
+  #linkEditor {
+    min-width: 90%;
+  }
+  #linkPreviewer, #linkEditor {
+    max-width: 100%;
+    background-color: white;
+    box-shadow: 2px 2px 2px rgba(80,80,80,.3), 0px 0px 4px rgba(200,200,200,.8);
+    form {
+      display: table;
+      width: 100%;
+      div {
+        display: table-row;
+        margin-bottom: 2px;
+        text-align: left;
+        label, input, span.button {
+          display: table-cell;
+        }
+      }
+      label {
+        text-align: right;
+        width: 4em;
+      }
+      input {
+        width: 100%;
+        &:focus {
+          outline: none;
+          z-index: 20;
+          position: relative;
+          &:valid {
+            box-shadow: 0px 0px 3px rgba(20,255,30,0.36);
+          }
+          &:invalid {
+            box-shadow: 0px 0px 3px rgba(255,20,30,1.0);
+          }
+        }
+      }
+    }
+  }
+}

@@ -49,6 +49,16 @@ Meteor.startup(function() {
           Annotes.update({_id: newId}, {$set: {thread: newId}})
         }
       },
+    reviseSourceText:
+      function(id, content) {
+        if(!this.userId) { return null }
+        check(id, String)
+        check(content, String)
+        if(Meteor.isServer) {
+          content = sanitizeHtml(content, {allowedTags: []})
+        }
+        Hls.update({_id: id, author: this.userId}, {$set: {sourceText: content}})
+      },
     updateDraft:
       function(id, content) {
         if(!this.userId) { return null }
@@ -73,7 +83,7 @@ Meteor.startup(function() {
       function(id) {
         Hls.remove({author: this.userId, draft: true, _id: Annotes.findOne(id).inReplyTo})
         Annotes.remove({author: this.userId, draft: true, _id: id})
-        Annotes.update({author: this.userId, _id: id, "editing.content": {$exists: true}}, {$unset: {editing: ""}})
+        Annotes.update({author: this.userId, _id: id, "editing.content": {$exists: true}}, {$set: {editing:null}})
       },
     saveAnnotation:
       function(id) {
@@ -82,22 +92,24 @@ Meteor.startup(function() {
         var annote = Annotes.findOne(id)
         if(annote.editing && annote.editing.content) {
           check(annote.editing.content, Match.nonEmptyString)
-          Annotes.update({author: this.userId, _id: id},{$set: {content: annote.editing.content, editedAt: annote.editing.editedAt}, $unset: {editing: ""}})
+          Annotes.update({author: this.userId, _id: id},{$set: {content: annote.editing.content, editedAt: annote.editing.editedAt, editing:null}})
           now = annote.editing.editedAt
         } else {
           check(annote.content, Match.nonEmptyString)
           Annotes.update({author: this.userId, draft: true, _id: id}, {$set: {draft: false, publishedAt: now}})
           Hls.update({author: this.userId, draft: true, _id: annote.inReplyTo}, {$set: {draft: false, publishedAt: now}})
         }
-        var activityNow = {$max: {activityAt: now}}
-        var propagateActivity = function(id) {
-          if(!Annotes.update({_id: id}, activityNow)) {
-            Hls.update({_id: id}, activityNow)
-          } else {
-            propagateActivity(Annotes.findOne(id).inReplyTo)
+        if(Meteor.isServer) {
+          var activityNow = {$max: {activityAt: now}}
+          var propagateActivity = function(id) {
+            if(!Annotes.update({_id: id}, activityNow)) {
+              Hls.update({_id: id}, activityNow)
+            } else {
+              propagateActivity(Annotes.findOne(id).inReplyTo)
+            }
           }
+          propagateActivity(id)
         }
-        propagateActivity(id)
       },
     edit:
       function(id) {

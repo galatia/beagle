@@ -1,5 +1,6 @@
 <head>
   <title>BEAGLE</title>
+  <link rel="stylesheet" href="/font-awesome-4.3.0/css/font-awesome.min.css">
 </head>
 
 <body>
@@ -25,7 +26,7 @@
 
 <template name="highlight">
   <div class="highlight {{#if hovered}}hovered{{/if}} {{#if clicked}}clicked{{/if}}" id="{{_id}}">
-    <div class="sourceText">{{sourceText}}</div>
+    <div class="sourceText" contenteditable></div>
     {{#each annotations}}
       {{> annotation}}
     {{/each}}
@@ -50,19 +51,21 @@
 </template>
 
 <template name="singleAnnotation">
-  <div class="authorBlock">
-    <img src="{{author.picture}}"/>
-    <span class="author">{{author.name}}</span>
-    <time datetime={{toISOString createdAt}} title={{localISO createdAt}}>{{fromNow createdAt}}</time>
-    <div class="actionBar">
-      {{#if owner}}
-        <span class="edit">Edit</span>
-      {{/if}}
-      <span class="reply">Reply</span>
+  <div class="singleAnnotation">
+    <div class="authorBlock">
+      <img src="{{author.picture}}"/>
+      <span class="author">{{author.name}}</span>
+      <time datetime={{toISOString createdAt}} title={{localISO createdAt}}>{{fromNow createdAt}}</time>
+      <div class="actionBar">
+        {{#if owner}}
+          <span class="edit">Edit</span>
+        {{/if}}
+        <span class="reply">Reply</span>
+      </div>
     </div>
-  </div>
-  <div class="annotation">
-    <div class="content">{{{content}}}</div>
+    <div class="contentContainer">
+      <div class="content">{{{content}}}</div>
+    </div>
   </div>
 </template>
 
@@ -70,16 +73,16 @@
   <div class="composeBox">
 
     <div class="toolbar">
-      <button data-command="bold"><b>B</b></button>
-      <button data-command="italic"><i>I</i></button>
-      <button data-command="underline"><u>U</u></button>
-      <button data-command="strikeThrough"><strike>S</strike></button>
-      <button data-command="insertUnorderedList">•</button>
-      <button data-command="insertOrderedList">1.</button>
-      <button data-command="indent">&gt;</button>
-      <button data-command="outdent">&lt;</button>
+      <button data-command="bold"><i class="fa fa-bold"></i></button>
+      <button data-command="italic"><i class="fa fa-italic"></i></button>
+      <button data-command="underline"><i class="fa fa-underline"></i></button>
+      <button data-command="strikeThrough"><i class="fa fa-strikethrough"></i></button>
+      <button data-command="insertUnorderedList"><i class="fa fa-list-ul"></i></button>
+      <button data-command="insertOrderedList"><i class="fa fa-list-ol"></i></button>
+      <button data-command="indent"><i class="fa fa-indent"></i></button>
+      <button data-command="outdent"><i class="fa fa-outdent"></i></button>
       <button class="removeFormat"><i>T</i><sub><small>X</small></sub></button>
-      <button class="createLink"><a href="#">K</a></button>
+      <button class="createLink"><i class="fa fa-link"></i></button>
     </div>
 
     <div class="composeFieldContainer">
