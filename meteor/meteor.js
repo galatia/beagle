@@ -17,24 +17,37 @@ Meteor.startup(function() {
         hl.draft     = true
         hl.createdAt = new Date()
         hl.author = this.userId
+        hl.contentOrder = {}
+        for(var i=0; i < hl.rects.length; i++){
+          var rect = hl.rects[i]
+          var page = rect.page
+          if(hl.contentOrder.page===undefined || page <= hl.contentOrder.page) {
+            if(page < hl.contentOrder.page || hl.contentOrder.y===undefined || rect.yMax > hl.contentOrder.y) {
+              if(page < hl.contentOrder.page || rect.yMax > hl.contentOrder.y || hl.contentOrder.x===undefined || rect.xMin < hl.contentOrder.x) {
+                hl.contentOrder.x = rect.xMin
+              }
+              hl.contentOrder.y = rect.yMax
+            }
+            hl.contentOrder.page = page
+          }
+        }
         return Hls.insert(hl)
       },
-    removeHl:
-      function(hl_id) {
-        check(hl_id, String)
-        Hls.remove({author: this.userId, _id: hl_id})
-      },
     addDraftAnnotation:
-      function(id) {
+      function(id, newThread) {
         if(!this.userId) { return null }
         check(id, String)
-        Annotes.insert({
+        var newId = Annotes.insert({
           author:    this.userId,
           createdAt: new Date(),
           draft:     true,
           content:   "",
-          inReplyTo: id
+          inReplyTo: id,
+          thread:    !newThread && Annotes.findOne(id).thread
         })
+        if(newThread) {
+          Annotes.update({_id: newId}, {$set: {thread: newId}})
+        }
       },
     updateDraft:
       function(id, content) {
@@ -67,18 +80,39 @@ Meteor.startup(function() {
         if(!this.userId) { return null }
         var now = new Date()
         var annote = Annotes.findOne(id)
-        if(annote.editing && annote.editing.content !== annote.content) {
+        if(annote.editing && annote.editing.content) {
           check(annote.editing.content, Match.nonEmptyString)
           Annotes.update({author: this.userId, _id: id},{$set: {content: annote.editing.content, editedAt: annote.editing.editedAt}, $unset: {editing: ""}})
+          now = annote.editing.editedAt
         } else {
           check(annote.content, Match.nonEmptyString)
           Annotes.update({author: this.userId, draft: true, _id: id}, {$set: {draft: false, publishedAt: now}})
           Hls.update({author: this.userId, draft: true, _id: annote.inReplyTo}, {$set: {draft: false, publishedAt: now}})
         }
+        var activityNow = {$max: {activityAt: now}}
+        var propagateActivity = function(id) {
+          if(!Annotes.update({_id: id}, activityNow)) {
+            Hls.update({_id: id}, activityNow)
+          } else {
+            propagateActivity(Annotes.findOne(id).inReplyTo)
+          }
+        }
+        propagateActivity(id)
       },
     edit:
       function(id) {
         Annotes.update({author: this.userId, _id: id}, {$set: {editing: {content: Annotes.findOne(id).content}}})
+      },
+    delete:
+      function delete_(id) {
+        var hl_id = Annotes.findOne(id).inReplyTo
+        Annotes.remove({_id: id})
+        Annotes.find({inReplyTo: id}).forEach(function(child) {
+          delete_(child._id)
+        })
+        if (!(Annotes.find({inReplyTo: hl_id}).count())) {
+          Hls.remove(hl_id)
+        }
       }
   })
 })

@@ -66,8 +66,11 @@ Meteor.startup(function() {
   // When highlight is clicked, scrolls to it in sidebar
   Tracker.autorun(function() {
     if(Session.get("clicked")) {
-      Hls.findOne(Session.get("clicked"))
-      scrollTo(Session.get("clicked"))
+      Session.get("sortOrder")
+      Annotes.find()
+      setTimeout(function() {
+        scrollTo(Session.get("clicked"))
+      },75)
     }
   })
 })

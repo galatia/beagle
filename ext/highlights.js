@@ -1,6 +1,5 @@
 // Once pdf loads, pass to port info about it
 document.addEventListener('pagesloaded', function (){
-  port.postMessage({pdfCreator: PDFViewerApplication.documentInfo.Creator})
   document.getElementById('viewerContainer').addEventListener('click', clearClicked, true)
 })
 

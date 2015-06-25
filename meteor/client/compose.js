@@ -1,8 +1,13 @@
 Meteor.startup(function() {
+  function findHl(id) {
+    if(!id || Hls.findOne(id)) {return id;}
+    else {return findHl(Annotes.findOne(id).inReplyTo)}
+  }
   Template.composeBox.onRendered(function() {
     var cF = this.find(".composeField")
     cF.innerHTML = (this.data.editing && this.data.editing.content) || this.data.content
     cF.focus()
+    Session.set("clicked", findHl(Template.currentData()._id))
     var sel   = window.getSelection()
     var range = sel.getRangeAt(0)
     range.selectNodeContents(cF)
@@ -166,6 +171,15 @@ Meteor.startup(function() {
     },
     'click .discard': function() {
       Meteor.call("discardDraft", Template.currentData()._id)
+    },
+    'click .delete': function() {
+      var id = Template.currentData()._id
+      children = Annotes.find({inReplyTo: id}).count()
+      if (window.confirm(children
+          ? "This action will also delete all subtrees and cannot be undone. Confirm?"
+          : "This deletion cannot be undone. Confirm?")) {
+        Meteor.call("delete", id)
+      }
     }
   })
   var selectPreviewedLink = function() {

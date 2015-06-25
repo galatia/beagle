@@ -10,12 +10,23 @@ Meteor.startup(function() {
   Template.registerHelper("calendar", function(date) { return moment(date).calendar() })
   Template.registerHelper("fromNow", function(date) { return moment(date).fromNow() })
 
+  Session.setDefault("sortOrder", "contentOrder")
+  function sortOrder() {
+    if (Session.equals("sortOrder", "recentItems")) {
+      return {draft: -1, publishedAt: -1}
+    } else if (Session.equals("sortOrder", "recentActivity")) {
+      return {draft: -1, activityAt: -1}
+    } else {
+      return {"contentOrder.page": 1, "contentOrder.y": -1, "contentOrder.x": 1}
+    }
+  }
+
   Template.sidebar.helpers({
     creator: function() {
       return Session.get("pdfCreator")
     },
     highlights: function() {
-      return Hls.find({},{sort: {createdAt: -1}})
+      return Hls.find({},{sort: sortOrder()})
     },
     linkPreview: function() {
       return Session.get("linkPreview")
@@ -35,7 +46,7 @@ Meteor.startup(function() {
   })
 
   Template.registerHelper("annotations", function() {
-    return Annotes.find({inReplyTo: this._id}, {sort: {draft: -1, publishedAt: -1}}).fetch()
+    return Annotes.find({inReplyTo: this._id}, {sort: sortOrder()}).fetch()
   })
 
   Template.annotation.helpers({
