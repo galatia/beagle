@@ -10,9 +10,9 @@ Meteor.startup(function() {
   Template.registerHelper("calendar", function(date) { return moment(date).calendar() })
   Template.registerHelper("fromNow", function(date) { return moment(date).fromNow() })
 
-  Session.setDefault("sortOrder", "contentOrder")
+  Session.setDefault("sortOrder", "pageOrdered")
   function sortOrder() {
-    if (Session.equals("sortOrder", "recentItems")) {
+    if (Session.equals("sortOrder", "newThreads")) {
       return {draft: -1, publishedAt: -1}
     } else if (Session.equals("sortOrder", "recentActivity")) {
       return {draft: -1, activityAt: -1}

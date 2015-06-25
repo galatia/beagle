@@ -1,5 +1,6 @@
 * {
   box-sizing: border-box;
+  font-family: sans-serif;
 }
 html, body, .sidebar {
   margin: 0;
@@ -8,11 +9,49 @@ html, body, .sidebar {
 }
 .sidebar {
   padding: 2px;
+  .toolbar {
+    .sortMenu {
+      background: #f0f0f0;
+      float:right;
+      position: relative;
+      border: 1px outset #ddd;
+      i.fa {
+        font-size: 18px;
+        margin: 2px;
+      }
+      .options {
+        font-size: smaller;
+        display: none;
+        position: absolute;
+        border-bottom: 10px solid transparent;
+        border-left: 10px solid transparent;
+        right: 0;
+        top: 100%;
+        width: auto;
+        .option {
+          width: 100%;
+          padding: 4px;
+          white-space: nowrap;
+          text-align: right;
+          background: #f0f0f0;
+          border: 1px solid #ddd;
+          &:hover {
+            border-style: inset;
+          }
+        }
+      }
+      &:hover {
+        border-style: inset;
+        .options {
+          display:block;
+        }
+      }
+    }
+  }
   .highlight {
     margin-bottom: 8px;
   }
 }
-
 
 .singleAnnotation {
   background: #f0f0f0;

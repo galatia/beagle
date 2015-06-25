@@ -8,6 +8,12 @@ Meteor.startup(function() {
     },
     'click .sidebar': function() {
       Session.set("clicked", false)
+    },
+    'click .sortMenu .option': function(e) {
+      sortOrder = e.target.getAttribute("data-sortOrder")
+      if(sortOrder) {
+        Session.set("sortOrder", sortOrder)
+      }
     }
   })
 

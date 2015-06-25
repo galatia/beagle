@@ -9,6 +9,16 @@
 
 <template name="sidebar">
   <div class="sidebar">
+    <div class="toolbar">
+      <div class="sortMenu">
+        <i class="fa fa-sort-amount-desc"></i>
+        <div class="options">
+          <div class="option" data-sortOrder="newThreads">New threads</div>
+          <div class="option" data-sortOrder="recentActivity">Recent activity</div>
+          <div class="option" data-sortOrder="pageOrdered">Page-ordered</div>
+        </div>
+      </div>
+    </div>
     <p>The source URL is: {{sourceUrl}}</p>
     <!-- <p>Its creator is: {{creator}}</p> -->
     <p><button class="screenshot-taker">Take a screenshot</button></p>
