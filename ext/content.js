@@ -1,4 +1,4 @@
-var appHost   = 1? 'http://localhost:3000/' : 'http://beagle.link/'
+var appHost   = 0? 'http://localhost:3000/' : 'http://beagle.link/'
 var sourceUrl = window.location.href
 
 

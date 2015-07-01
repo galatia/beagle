@@ -1,4 +1,5 @@
 Meteor.startup(function() {
+  Meteor.subscribe("userData");
   Session.setDefault("pdfCreator", null)
 
   Template.sidebar.events({

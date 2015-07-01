@@ -3,10 +3,6 @@ Meteor.startup(function() {
     if(!id || Hls.findOne(id)) {return id;}
     else {return findHl(Annotes.findOne(id).inReplyTo)}
   }
-  Template.highlight.onRendered(function() {
-    var sT = this.find(".sourceText")
-    sT.innerHTML = this.data.sourceText
-  })
   Template.composeBox.onRendered(function() {
     var cF = this.find(".composeField")
     cF.innerHTML = (this.data.editing && this.data.editing.content) || this.data.content

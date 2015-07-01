@@ -65,14 +65,16 @@
 </template>
 
 <template name="highlight">
-  <div class="highlight {{#if hover}}hover{{/if}} {{#if clicked}}clicked{{/if}}" id="{{_id}}">
-    <div class="sourceText" contenteditable></div>
-    <div class="replies">
-      {{#each annotations}}
-        {{> annotation}}
-      {{/each}}
+  {{#if annotations}}
+    <div class="highlight {{#if hover}}hover{{/if}} {{#if clicked}}clicked{{/if}}" id="{{_id}}">
+      <div class="sourceText" contenteditable>{{{nonReactiveSourceText}}}</div>
+      <div class="replies">
+        {{#each annotations}}
+          {{> annotation}}
+        {{/each}}
+      </div>
     </div>
-  </div>
+  {{/if}}
 </template>
 
 <template name="annotation">

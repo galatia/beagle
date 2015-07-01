@@ -45,6 +45,11 @@ Meteor.startup(function() {
     clicked: function() {
       return Session.equals("clicked", this._id)
     },
+    nonReactiveSourceText: function() {
+      return Tracker.nonreactive(function() {
+        return Template.instance().data.sourceText
+      })
+    }
   })
 
   Template.registerHelper("annotations", function() {
@@ -53,7 +58,7 @@ Meteor.startup(function() {
 
   Template.singleAnnotation.helpers({
     compose: function() {
-      return this.draft || this.editing
+      return (this.draft || this.editing) && (this.author == Meteor.userId())
     },
     author: function() {
       var user = Meteor.users.findOne(this.author)
@@ -63,6 +68,11 @@ Meteor.startup(function() {
     },
     owner: function() {
       return Meteor.userId() == this.author
+    },
+    insertContent: function() {
+      var content = Template.instance.find(".content")
+      if(content) {content.innerHTML = Template.currentData().content;}
+      return Template.currentData().content;
     }
   })
 })
