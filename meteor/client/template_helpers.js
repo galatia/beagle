@@ -24,9 +24,6 @@ Meteor.startup(function() {
   }
 
   Template.sidebar.helpers({
-    creator: function() {
-      return Session.get("pdfCreator")
-    },
     highlights: function() {
       return Hls.find({},{sort: sortOrder()})
     },

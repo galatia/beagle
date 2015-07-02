@@ -1,6 +1,6 @@
 Meteor.startup(function() {
   Meteor.subscribe("userData");
-  Session.setDefault("pdfCreator", null)
+  Session.setDefault("documentInfo", null)
 
   Template.sidebar.events({
     'click .screenshotButton': function() {

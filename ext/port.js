@@ -6,10 +6,10 @@
 
   function hello() {
     if(PDFViewerApplication.documentInfo) {
-      port.postMessage({pdfCreator: PDFViewerApplication.documentInfo.Creator})
+      port.postMessage({documentInfo: PDFViewerApplication.documentInfo})
     } else {
       document.addEventListener('pagesloaded', function() {
-        port.postMessage({pdfCreator: PDFViewerApplication.documentInfo.Creator})
+        port.postMessage({documentInfo: PDFViewerApplication.documentInfo})
       })
     }
   }

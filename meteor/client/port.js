@@ -46,8 +46,11 @@
   }
 
   port.onMessage.addListener(function (message) {
-    if(message.pdfCreator) {
-      Session.set("pdfCreator", message.pdfCreator)
+    if(message.documentInfo) {
+      Session.set("documentInfo", message.documentInfo)
+      Meteor.startup(initPort)
+    } else if (message.pdfCreator) {
+      Session.set("documentInfo", {pdfCreator: message.pdfCreator})
       Meteor.startup(initPort)
     } else if (message.highlight) {
       var hl = message.highlight
