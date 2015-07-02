@@ -281,6 +281,9 @@ span.action {
 .hover .sourceText {
   background-color: rgba(156,230,255,.5);
 }
+.hover.clicked .sourceText {
+  background-color: rgba(255,130,0,.5);
+}
 
 .singleAnnotation {
   display: flex;
